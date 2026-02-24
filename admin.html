@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Tahu Walik Wuenaaak</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧈</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header admin-header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <h1 class="app-title">Admin Panel</h1>
+            </div>
+            <p class="app-subtitle">Kelola Pesanan • Tahu Walik Wuenaaak</p>
+        </header>
+
+        <div class="admin-link-container">
+            <a href="index.html" class="admin-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                Pemesanan
+            </a>
+            <button class="logout-btn" id="logout-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Logout
+            </button>
+        </div>
+
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="orders">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                Daftar Pesanan
+            </button>
+            <button class="tab-btn" data-tab="analytics">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                Analytics
+            </button>
+        </div>
+
+        <main class="main-content">
+            <div class="card order-status-card">
+                <div class="order-status-container">
+                    <div class="order-status-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:8px;">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Status Pemesanan:
+                    </div>
+                    <div class="order-status-value" id="order-status">
+                        <span class="status-indicator status-open">⏳ Memuat...</span>
+                    </div>
+                    <button class="toggle-order-btn" id="toggle-order-btn">
+                        🔄 Ubah Status
+                    </button>
+                </div>
+            </div>
+
+            <div id="orders-tab" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="card-title-icon">📋</span>
+                            Daftar Pesanan
+                        </h2>
+                        <button class="refresh-btn" id="refresh-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10"/>
+                                <polyline points="1 20 1 14 7 14"/>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+
+                    <div class="admin-table-container">
+                        <table class="orders-table" id="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>WhatsApp</th>
+                                    <th>Menu</th>
+                                    <th>Jumlah</th>
+                                    <th>Harga</th>
+                                    <th>Status</th>
+                                    <th>Tanggal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-tbody">
+                                <tr>
+                                    <td colspan="8" class="empty-state">
+                                        <div style="font-size: 2rem; margin-bottom: 8px;">📭</div>
+                                        Memuat data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="empty-state" id="empty-state" style="display: none;">
+                        <div style="font-size: 3rem; margin-bottom: 8px;">📭</div>
+                        <p>Tidak ada pesanan</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analytics-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="card-title-icon">📊</span>
+                            Laporan Analytics
+                        </h2>
+                        <button class="refresh-btn" id="refresh-analytics-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10"/>
+                                <polyline points="1 20 1 14 7 14"/>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+
+                    <div class="analytics-summary">
+                        <div class="summary-card">
+                            <div class="summary-icon">💰</div>
+                            <div class="summary-label">Total Omzet</div>
+                            <div class="summary-value" id="total-omzet">Rp 0</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">📦</div>
+                            <div class="summary-label">Total Item Terjual</div>
+                            <div class="summary-value" id="total-item">0</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">📈</div>
+                            <div class="summary-label">Total Keuntungan</div>
+                            <div class="summary-value" id="total-keuntungan">Rp 0</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">🧾</div>
+                            <div class="summary-label">Total Transaksi</div>
+                            <div class="summary-value" id="total-transaksi">0</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-subtitle">Laporan Mingguan (1 Tahun Terakhir)</h3>
+                    <div class="admin-table-container">
+                        <table class="analytics-table" id="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Minggu ke-</th>
+                                    <th>Periode</th>
+                                    <th>Total Omzet</th>
+                                    <th>Item Terjual</th>
+                                    <th>Keuntungan</th>
+                                    <th>Transaksi</th>
+                                    <th>Pembeli</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analytics-tbody">
+                                <tr>
+                                    <td colspan="8" class="empty-state">
+                                        <div style="font-size: 2rem; margin-bottom: 8px;">📊</div>
+                                        Memuat data analytics...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2026 <a href="#">Tahu Walik Wuenaaak</a> • Admin Panel</p>
+        </footer>
+    </div>
+
+    <div id="toast-container"></div>
+    
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Mohon tunggu...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

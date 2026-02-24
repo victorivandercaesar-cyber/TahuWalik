@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lacak Pesanan - Tahu Walik Wuenaaak</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧈</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                        <line x1="9" y1="9" x2="9.01" y2="9"/>
+                        <line x1="15" y1="9" x2="15.01" y2="9"/>
+                    </svg>
+                </div>
+                <h1 class="app-title">Tahu Walik Wuenaaak</h1>
+            </div>
+            <p class="app-subtitle">Lacak Pesanan Anda 🔍</p>
+        </header>
+
+        <div class="admin-link-container">
+            <a href="index.html" class="admin-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                Pemesanan
+            </a>
+        </div>
+
+        <main class="main-content">
+            <!-- Search Card -->
+            <div class="card">
+                <h2 class="card-title">
+                    <span class="card-title-icon">🔍</span>
+                    Lacak Pesanan
+                </h2>
+                
+                <form id="track-form">
+                    <div class="input-group">
+                        <label for="search-input">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            Masukkan ID Pesanan atau Nomor WhatsApp
+                        </label>
+                        <input type="text" id="search-input" placeholder="Contoh: TW-ABC123 atau 081234567890" required>
+                        <small class="input-hint">📝 Masukkan ID pesanan (TW-XXXXX) atau nomor WhatsApp yang digunakan saat memesan</small>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="track-btn">
+                        <span class="btn-icon">🔍</span>
+                        <span class="btn-text">Cari Pesanan</span>
+                        <span class="btn-loading" style="display: none;">Mencari...</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Order Detail Card -->
+            <div class="card" id="order-detail-card" style="display: none;">
+                <div class="order-detail-header">
+                    <div class="order-id-display">
+                        <span class="order-id-label">ID Pesanan:</span>
+                        <span class="order-id-value" id="display-order-id">-</span>
+                    </div>
+                    <div class="order-status-badge" id="display-order-status">-</div>
+                </div>
+
+                <div class="order-info-grid">
+                    <div class="order-info-item">
+                        <span class="order-info-label">Nama Pelanggan</span>
+                        <span class="order-info-value" id="display-customer-name">-</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="order-info-label">WhatsApp</span>
+                        <span class="order-info-value" id="display-whatsapp">-</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="order-info-label">Menu</span>
+                        <span class="order-info-value" id="display-menu">-</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="order-info-label">Jumlah</span>
+                        <span class="order-info-value" id="display-jumlah">-</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="order-info-label">Total Harga</span>
+                        <span class="order-info-value" id="display-harga">-</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="order-info-label">Tanggal Pesan</span>
+                        <span class="order-info-value" id="display-created">-</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="order-actions" id="order-actions">
+                    <button class="action-btn edit-btn" id="edit-order-btn" onclick="showEditForm()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Edit Pesanan
+                    </button>
+                    <button class="action-btn cancel-btn" id="cancel-order-btn" onclick="cancelOrder()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                        Cancel Pesanan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Edit Form Card -->
+            <div class="card" id="edit-form-card" style="display: none;">
+                <h2 class="card-title">
+                    <span class="card-title-icon">✏️</span>
+                    Edit Pesanan
+                </h2>
+                
+                <form id="edit-order-form">
+                    <div class="input-group">
+                        <label for="edit-name">Nama Pelanggan</label>
+                        <input type="text" id="edit-name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="edit-whatsapp">Nomor WhatsApp</label>
+                        <input type="tel" id="edit-whatsapp" pattern="[0-9]{10,13}" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="edit-menu">Pilih Menu</label>
+                        <select id="edit-menu" onchange="showEditMenuOptions()" required>
+                            <option value="">-- Pilih Menu --</option>
+                            <option value="pangsit-goreng">Pangsit Goreng</option>
+                            <option value="tahu-walik">Tahu Walik</option>
+                        </select>
+                    </div>
+
+                    <!-- Edit Options for Pangsit -->
+                    <div class="form-section menu-options-section" id="edit-pangsit-options" style="display: none;">
+                        <h3 class="section-title"><span>🥟</span> Jumlah Pangsit Goreng</h3>
+                        <div id="edit-pangsit-items"></div>
+                        <button type="button" class="add-item-btn" onclick="addEditPangsitItem()">
+                            <span>+</span> Tambah Item
+                        </button>
+                    </div>
+
+                    <!-- Edit Options for Tahu -->
+                    <div class="form-section menu-options-section" id="edit-tahu-options" style="display: none;">
+                        <h3 class="section-title"><span>🧈</span> Jumlah Tahu Walik</h3>
+                        <div id="edit-tahu-items"></div>
+                        <button type="button" class="add-item-btn" onclick="addEditTahuItem()">
+                            <span>+</span> Tambah Item
+                        </button>
+                    </div>
+
+                    <!-- Total Section -->
+                    <div class="total-section">
+                        <div class="total-display">
+                            <span class="total-label">Total Harga:</span>
+                            <span class="total-amount" id="edit-total-price">Rp0</span>
+                        </div>
+                    </div>
+
+                    <div class="edit-form-actions">
+                        <button type="button" class="cancel-edit-btn" onclick="cancelEdit()">
+                            Batal
+                        </button>
+                        <button type="submit" class="submit-btn" id="save-edit-btn">
+                            <span class="btn-icon">💾</span>
+                            <span class="btn-text">Simpan Perubahan</span>
+                            <span class="btn-loading" style="display: none;">Menyimpan...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Empty/Error State -->
+            <div class="empty-state" id="track-empty-state" style="display: none;">
+                <div style="font-size: 3rem; margin-bottom: 8px;">😕</div>
+                <p id="track-empty-message">Pesanan tidak ditemukan</p>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2026 <a href="#">Tahu Walik Wuenaaak</a> • Crispy & Lezat! 🍳</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-container"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Mohon tunggu...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+    <script src="track.js"></script>
+</body>
+</html>

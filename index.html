@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahu Walik Wuenaaak - Pemesanan Online</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧈</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                        <line x1="9" y1="9" x2="9.01" y2="9"/>
+                        <line x1="15" y1="9" x2="15.01" y2="9"/>
+                    </svg>
+                </div>
+                <h1 class="app-title">Tahu Walik Wuenaaak</h1>
+            </div>
+            <p class="app-subtitle">Pemesanan Online • Langsung Dibuat Fres🔥</p>
+        </header>
+
+        <div class="admin-link-container">
+            <a href="track.html" class="admin-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                Lacak Pesanan
+            </a>
+            <a href="login.html" class="admin-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Admin
+            </a>
+        </div>
+
+        <main class="main-content">
+            <div class="card form-card">
+                <h2 class="card-title">
+                    <span class="card-title-icon">📝</span>
+                    Form Pemesanan
+                </h2>
+                
+                <form id="order-form">
+                    <!-- Section: Data Pelanggan -->
+                    <div class="form-section">
+                        <h3 class="section-title">Data Pelanggan</h3>
+                        
+                        <div class="input-group">
+                            <label for="customer-name">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Nama Pelanggan
+                            </label>
+                            <input type="text" id="customer-name" placeholder="Masukkan nama Anda" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="whatsapp">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
+                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                </svg>
+                                Nomor WhatsApp
+                            </label>
+                            <input type="tel" id="whatsapp" placeholder="Contoh: 081234567890" pattern="[0-9]{10,13}" required>
+                            <small class="input-hint">📱 Nomor WhatsApp aktif untuk konfirmasi pesanan</small>
+                        </div>
+                    </div>
+
+                    <!-- Section: Pilih Menu -->
+                    <div class="form-section">
+                        <h3 class="section-title">Pilih Menu</h3>
+                        
+                        <div class="menu-selection">
+                            <label class="menu-option">
+                                <input type="radio" name="menu" value="pangsit-goreng" required onchange="showMenuOptions()">
+                                <span class="menu-card">
+                                    <span class="menu-icon">🥟</span>
+                                    <span class="menu-name">Pangsit Goreng</span>
+                                    <span class="menu-check">✓</span>
+                                </span>
+                            </label>
+
+                            <label class="menu-option">
+                                <input type="radio" name="menu" value="tahu-walik" onchange="showMenuOptions()">
+                                <span class="menu-card">
+                                    <span class="menu-icon">🧈</span>
+                                    <span class="menu-name">Tahu Walik</span>
+                                    <span class="menu-check">✓</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Opsi Menu untuk Pangsit -->
+                    <div class="form-section menu-options-section" id="pangsit-options" style="display: none;">
+                        <h3 class="section-title">
+                            <span>🥟</span> Jumlah Pangsit Goreng
+                        </h3>
+                        
+                        <div class="order-item" id="pangsit-item-1">
+                            <div class="order-item-header">
+                                <span class="order-item-number">Item 1</span>
+                            </div>
+                            <div class="order-item-fields">
+                                <div class="input-group">
+                                    <label>Jumlah Porsi</label>
+                                    <select class="pangsit-porsi" onchange="calculateTotal()">
+                                        <option value="1">1 Porsi</option>
+                                        <option value="2">2 Porsi</option>
+                                        <option value="3">3 Porsi</option>
+                                        <option value="4">4 Porsi</option>
+                                        <option value="5">5 Porsi</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Isi per Porsi</label>
+                                    <select class="pangsit-jumlah" onchange="calculateTotal()">
+                                        <option value="5" data-price="10000">5 biji - Rp10.000</option>
+                                        <option value="8" data-price="15000">8 biji - Rp15.000</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="add-item-btn" onclick="addPangsitItem()">
+                            <span>+</span> Tambah Item
+                        </button>
+                    </div>
+
+                    <!-- Opsi Menu untuk Tahu -->
+                    <div class="form-section menu-options-section" id="tahu-options" style="display: none;">
+                        <h3 class="section-title">
+                            <span>🧈</span> Jumlah Tahu Walik
+                        </h3>
+                        
+                        <div class="order-item" id="tahu-item-1">
+                            <div class="order-item-header">
+                                <span class="order-item-number">Item 1</span>
+                            </div>
+                            <div class="order-item-fields">
+                                <div class="input-group">
+                                    <label>Jumlah Porsi</label>
+                                    <select class="tahu-porsi" onchange="calculateTotal()">
+                                        <option value="1">1 Porsi</option>
+                                        <option value="2">2 Porsi</option>
+                                        <option value="3">3 Porsi</option>
+                                        <option value="4">4 Porsi</option>
+                                        <option value="5">5 Porsi</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Isi per Porsi</label>
+                                    <select class="tahu-jumlah" onchange="calculateTotal()">
+                                        <option value="3" data-price="10000">3 biji - Rp10.000</option>
+                                        <option value="5" data-price="15000">5 biji - Rp15.000</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="add-item-btn" onclick="addTahuItem()">
+                            <span>+</span> Tambah Item
+                        </button>
+                    </div>
+
+                    <!-- Ringkasan Pesanan -->
+                    <div class="form-section" id="summary-section" style="display: none;">
+                        <h3 class="section-title">
+                            <span>📋</span> Ringkasan Pesanan
+                        </h3>
+                        <div id="order-summary"></div>
+                    </div>
+
+                    <!-- Total Harga -->
+                    <div class="form-section total-section">
+                        <div class="total-display">
+                            <span class="total-label">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:8px;">
+                                    <line x1="12" y1="1" x2="12" y2="23"/>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                                Total Harga:
+                            </span>
+                            <span class="total-amount" id="total-price">Rp0</span>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Submit -->
+                    <button type="submit" class="submit-btn" id="submit-btn" disabled>
+                        <span class="btn-icon">🛒</span>
+                        <span class="btn-text">Pesan Sekarang</span>
+                        <span class="btn-loading" style="display: none;">Memproses...</span>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+<footer class="app-footer">
+            <p>© 2026 <a href="#">Tahu Walik Wuenaaak</a> • Crispy & Lezat! 🍳</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-container"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Mohon tunggu...</div>
+    </div>
+
+    <!-- Order Closed Overlay -->
+    <div class="order-closed-overlay" id="order-closed-overlay" style="display: none;">
+        <div class="order-closed-message">
+            <div style="font-size: 4rem; margin-bottom: 16px;">⛔</div>
+            <h2>Pemesanan Ditutup</h2>
+            <p>Maaf, pemesanan sedang ditutup.<br>Silakan hubungi kami melalui WhatsApp untuk informasi lebih lanjut.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
