@@ -64,15 +64,16 @@ async function checkOrderStatus() {
 
 function updateOrderStatusDisplay() {
     const overlay = document.getElementById('order-closed-overlay');
+    const banner = document.getElementById('order-closed-banner');
     const form = document.getElementById('order-form');
     const submitBtn = document.getElementById('submit-btn');
     
     if (!orderOpen) {
-        if (overlay) overlay.style.display = 'flex';
-        if (form) form.classList.add('form-disabled');
-        if (submitBtn) submitBtn.disabled = true;
+        // Redirect ke halaman order-closed.html
+        window.location.href = 'order-closed.html';
     } else {
         if (overlay) overlay.style.display = 'none';
+        if (banner) banner.style.display = 'none';
         if (form) form.classList.remove('form-disabled');
     }
 }

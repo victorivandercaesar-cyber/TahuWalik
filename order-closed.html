@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemesanan Ditutup - Tahu Walik Wuenaaak</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧈</text></svg>">
+    
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #FFFEF5 0%, #FFF8E7 100%);
+        }
+        
+        .closed-container {
+            text-align: center;
+            padding: 48px;
+            max-width: 480px;
+            margin: 16px;
+        }
+        
+        .closed-icon {
+            font-size: 5rem;
+            margin-bottom: 24px;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .closed-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #D32F2F;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .closed-subtitle {
+            font-size: 1.1rem;
+            color: #5D4037;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .closed-info {
+            background: #FFF8E1;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .closed-info-title {
+            font-weight: 700;
+            color: #5D4037;
+            margin-bottom: 12px;
+        }
+        
+        .closed-info-text {
+            color: #8D6E63;
+            font-size: 0.9rem;
+        }
+        
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
+            color: #5D4037;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+        
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 193, 7, 0.4);
+        }
+        
+        .refresh-hint {
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: #8D6E63;
+        }
+    </style>
+</head>
+<body>
+    <div class="closed-container">
+        <div class="closed-icon">❌</div>
+        
+        <h1 class="closed-title">ORDER SEDANG DITUTUP</h1>
+        
+        <p class="closed-subtitle">
+            Maaf, pemesanan sedang ditutup untuk sementara waktu.<br>
+            Silakanhubungi kami melalui WhatsApp untuk informasi lebih lanjut.
+        </p>
+        
+        <div class="closed-info">
+            <div class="closed-info-title">📱 Info Kontak</div>
+            <div class="closed-info-text">
+                Hubungi kami untuk informasi pemesanan atau pertanyaan lainnya.
+            </div>
+        </div>
+        
+        <a href="login.html" class="home-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Masuk ke Admin
+        </a>
+        
+        <p class="refresh-hint">💡 Coba refresh halaman ini nanti untuk melihat status pemesanan</p>
+    </div>
+
+    <script>
+        // Auto-refresh untuk cek status order
+        // Jika order dibuka, akan redirect ke index.html
+        async function checkOrderStatus() {
+            try {
+                const SUPABASE_URL = 'https://lyvnldssbwuqmfdorfei.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5dm5sZHNzYnd1cW1mZG9yZmVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MjU3MDQsImV4cCI6MjA4NzQwMTcwNH0.EYoxdsKjggZPwZmv84bihTyi4yPYqd7VRSSKDzmVyMo';
+                
+                if (typeof window.supabase !== 'undefined') {
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    const { data, error } = await client
+                        .from('settings')
+                        .select('order_open')
+                        .limit(1);
+                    
+                    if (!error && data && data.length > 0 && data[0].order_open) {
+                        // Order dibuka, redirect ke halaman utama
+                        window.location.href = 'index.html';
+                    }
+                }
+            } catch (e) {
+                console.log('Error checking status:', e);
+            }
+            
+            // Cek lagi setiap 10 detik
+            setTimeout(checkOrderStatus, 10000);
+        }
+        
+        // Mulai cek status
+        checkOrderStatus();
+    </script>
+</body>
+</html>

@@ -1113,6 +1113,43 @@ body::before {
 }
 
 /* ============================================
+   Order Closed Banner
+   ============================================ */
+
+.order-closed-banner {
+    background: linear-gradient(135deg, var(--accent-red) 0%, #D32F2F 100%);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+    animation: pulse-banner 2s ease-in-out infinite;
+}
+
+@keyframes pulse-banner {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.order-closed-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.order-closed-icon {
+    font-size: 1.5rem;
+}
+
+.order-closed-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ============================================
    Multi-Item Order Styles
    ============================================ */
 
