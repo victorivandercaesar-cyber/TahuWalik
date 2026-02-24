@@ -29,20 +29,39 @@ function getSupabaseClient() {
 }
 
 // ============================================
-// ORDER OPEN/CLOSE SYSTEM (localStorage)
+// ORDER OPEN/CLOSE SYSTEM (Supabase)
 // ============================================
 
-const ORDER_STATUS_KEY = 'orderStatus';
+async function checkOrderStatus() {
+    try {
+        const client = getSupabaseClient();
+        
+        if (!client) {
+            orderOpen = true;
+            updateOrderStatusDisplay();
+            return;
+        }
 
-function getOrderStatus() {
-    const status = localStorage.getItem(ORDER_STATUS_KEY);
-    return status || 'open';
-}
+        const { data, error } = await client
+            .from('system_status')
+            .select('order_status')
+            .eq('id', 1)
+            .single();
 
-function checkOrderStatus() {
-    const status = getOrderStatus();
-    orderOpen = (status === 'open');
-    updateOrderStatusDisplay();
+        if (error || !data) {
+            // Jika belum ada data, default open
+            orderOpen = true;
+        } else {
+            orderOpen = (data.order_status === 'open');
+        }
+
+        updateOrderStatusDisplay();
+
+    } catch (error) {
+        console.error('Error checking order status:', error);
+        orderOpen = true;
+        updateOrderStatusDisplay();
+    }
 }
 
 function updateOrderStatusDisplay() {

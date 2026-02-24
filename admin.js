@@ -110,24 +110,43 @@ function escapeHtml(text) {
 }
 
 // ============================================
-// ORDER OPEN/CLOSE SYSTEM (localStorage)
+// ORDER OPEN/CLOSE SYSTEM (Supabase)
 // ============================================
 
-const ORDER_STATUS_KEY = 'orderStatus';
+async function fetchOrderStatus() {
+    try {
+        const client = getSupabaseClient();
+        
+        if (!client) {
+            orderOpen = true;
+            updateOrderStatusDisplay();
+            return;
+        }
 
-function getOrderStatus() {
-    const status = localStorage.getItem(ORDER_STATUS_KEY);
-    return status || 'open';
-}
+        const { data, error } = await client
+            .from('system_status')
+            .select('order_status')
+            .eq('id', 1)
+            .single();
 
-function setOrderStatus(status) {
-    localStorage.setItem(ORDER_STATUS_KEY, status);
-}
+        if (error) {
+            console.log('Error fetching order status:', error);
+            // Jika belum ada data, insert default
+            await client
+                .from('system_status')
+                .insert([{ id: 1, order_status: 'open' }]);
+            orderOpen = true;
+        } else {
+            orderOpen = (data.order_status === 'open');
+        }
 
-function fetchOrderStatus() {
-    const status = getOrderStatus();
-    orderOpen = (status === 'open');
-    updateOrderStatusDisplay();
+        updateOrderStatusDisplay();
+
+    } catch (error) {
+        console.error('Error fetching order status:', error);
+        orderOpen = true;
+        updateOrderStatusDisplay();
+    }
 }
 
 function updateOrderStatusDisplay() {
@@ -143,31 +162,60 @@ function updateOrderStatusDisplay() {
     }
 }
 
-function toggleOrderStatus() {
-    const currentStatus = getOrderStatus();
-    let newStatus;
+async function toggleOrderStatus() {
+    const newStatus = !orderOpen;
     let confirmMessage;
     
-    if (currentStatus === 'open') {
-        newStatus = 'closed';
-        confirmMessage = 'Apakah Anda yakin ingin MENUTUP pemesanan?';
-    } else {
-        newStatus = 'open';
+    if (newStatus) {
         confirmMessage = 'Apakah Anda yakin ingin MEMBUKA pemesanan?';
+    } else {
+        confirmMessage = 'Apakah Anda yakin ingin MENUTUP pemesanan?';
     }
     
     if (!confirm(confirmMessage)) {
         return;
     }
-    
-    setOrderStatus(newStatus);
-    orderOpen = (newStatus === 'open');
-    updateOrderStatusDisplay();
-    
-    if (newStatus === 'open') {
-        showToast('✅ Pemesanan dibuka!', 'success');
-    } else {
-        showToast('⛔ Pemesanan ditutup!', 'success');
+
+    setLoading(true);
+
+    try {
+        const client = getSupabaseClient();
+        
+        if (!client) {
+            orderOpen = newStatus;
+            updateOrderStatusDisplay();
+            showToast(newStatus ? '✅ Pemesanan dibuka!' : '⛔ Pemesanan ditutup!', 'success');
+            return;
+        }
+
+        // Update status di Supabase
+        const { error } = await client
+            .from('system_status')
+            .update({ 
+                order_status: newStatus ? 'open' : 'closed',
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', 1);
+
+        if (error) {
+            // Jika data belum ada, insert baru
+            await client
+                .from('system_status')
+                .insert([{ 
+                    id: 1, 
+                    order_status: newStatus ? 'open' : 'closed' 
+                }]);
+        }
+
+        orderOpen = newStatus;
+        updateOrderStatusDisplay();
+        showToast(newStatus ? '✅ Pemesanan dibuka!' : '⛔ Pemesanan ditutup!', 'success');
+
+    } catch (error) {
+        console.error('Error toggling order status:', error);
+        showToast('❌ Gagal mengubah status pemesanan', 'error');
+    } finally {
+        setLoading(false);
     }
 }
 

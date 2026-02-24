@@ -131,24 +131,33 @@
         <p class="refresh-hint">💡 Coba refresh halaman ini nanti untuk melihat status pemesanan</p>
     </div>
 
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
-        // Auto-refresh untuk cek status order (localStorage)
+        // Auto-refresh untuk cek status order (Supabase)
         // Jika order dibuka, akan redirect ke index.html
         
-        const ORDER_STATUS_KEY = 'orderStatus';
+        const SUPABASE_URL = 'https://lyvnldssbwuqmfdorfei.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5dm5sZHNzYnd1cW1mZG9yZmVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MjU3MDQsImV4cCI6MjA4NzQwMTcwNH0.EYoxdsKjggZPwZmv84bihTyi4yPYqd7VRSSKDzmVyMo';
         
-        function getOrderStatus() {
-            const status = localStorage.getItem(ORDER_STATUS_KEY);
-            return status || 'open';
-        }
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        function checkOrderStatus() {
-            const status = getOrderStatus();
-            
-            // Jika order sudah dibuka, redirect ke index.html
-            if (status === 'open') {
-                window.location.href = 'index.html';
-                return;
+        async function checkOrderStatus() {
+            try {
+                const { data, error } = await client
+                    .from('system_status')
+                    .select('order_status')
+                    .eq('id', 1)
+                    .single();
+                
+                // Jika order sudah dibuka (open), redirect ke index.html
+                if (!error && data && data.order_status === 'open') {
+                    window.location.href = 'index.html';
+                    return;
+                }
+            } catch (e) {
+                console.log('Error checking status:', e);
             }
             
             // Cek lagi setiap 10 detik
