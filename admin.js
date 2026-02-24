@@ -110,42 +110,24 @@ function escapeHtml(text) {
 }
 
 // ============================================
-// ORDER OPEN/CLOSE SYSTEM
+// ORDER OPEN/CLOSE SYSTEM (localStorage)
 // ============================================
 
-async function fetchOrderStatus() {
-    try {
-        const client = getSupabaseClient();
-        
-        if (!client) {
-            orderOpen = true;
-            updateOrderStatusDisplay();
-            return;
-        }
+const ORDER_STATUS_KEY = 'orderStatus';
 
-        const { data, error } = await client
-            .from('settings')
-            .select('order_open')
-            .limit(1);
+function getOrderStatus() {
+    const status = localStorage.getItem(ORDER_STATUS_KEY);
+    return status || 'open';
+}
 
-        if (error) throw error;
+function setOrderStatus(status) {
+    localStorage.setItem(ORDER_STATUS_KEY, status);
+}
 
-        if (data && data.length > 0) {
-            orderOpen = data[0].order_open;
-        } else {
-            orderOpen = true;
-            await client
-                .from('settings')
-                .insert([{ order_open: true }]);
-        }
-
-        updateOrderStatusDisplay();
-
-    } catch (error) {
-        console.error('Error fetching order status:', error);
-        orderOpen = true;
-        updateOrderStatusDisplay();
-    }
+function fetchOrderStatus() {
+    const status = getOrderStatus();
+    orderOpen = (status === 'open');
+    updateOrderStatusDisplay();
 }
 
 function updateOrderStatusDisplay() {
@@ -154,57 +136,38 @@ function updateOrderStatusDisplay() {
     
     if (orderOpen) {
         statusElement.innerHTML = '<span class="status-indicator status-open">✅ BUKA</span>';
-        toggleBtn.textContent = '🔴 Tutup Order';
+        toggleBtn.textContent = '🔴 Close Order';
     } else {
         statusElement.innerHTML = '<span class="status-indicator status-closed">⛔ TUTUP</span>';
-        toggleBtn.textContent = '🟢 Buka Order';
+        toggleBtn.textContent = '🟢 Open Order';
     }
 }
 
-async function toggleOrderStatus() {
-    const newStatus = !orderOpen;
+function toggleOrderStatus() {
+    const currentStatus = getOrderStatus();
+    let newStatus;
+    let confirmMessage;
     
-    if (!confirm(newStatus ? 'Apakah Anda yakin ingin MEMBUKA pemesanan?' : 'Apakah Anda yakin ingin MENUTUP pemesanan?')) {
+    if (currentStatus === 'open') {
+        newStatus = 'closed';
+        confirmMessage = 'Apakah Anda yakin ingin MENUTUP pemesanan?';
+    } else {
+        newStatus = 'open';
+        confirmMessage = 'Apakah Anda yakin ingin MEMBUKA pemesanan?';
+    }
+    
+    if (!confirm(confirmMessage)) {
         return;
     }
-
-    setLoading(true);
-
-    try {
-        const client = getSupabaseClient();
-        
-        if (!client) {
-            orderOpen = newStatus;
-            updateOrderStatusDisplay();
-            showToast(newStatus ? '✅ Pemesanan dibuka!' : '⛔ Pemesanan ditutup!', 'success');
-            return;
-        }
-
-        const { data: existingData } = await client
-            .from('settings')
-            .select('id')
-            .limit(1);
-
-        if (existingData && existingData.length > 0) {
-            await client
-                .from('settings')
-                .update({ order_open: newStatus })
-                .eq('id', existingData[0].id);
-        } else {
-            await client
-                .from('settings')
-                .insert([{ order_open: newStatus }]);
-        }
-
-        orderOpen = newStatus;
-        updateOrderStatusDisplay();
-        showToast(newStatus ? '✅ Pemesanan dibuka!' : '⛔ Pemesanan ditutup!', 'success');
-
-    } catch (error) {
-        console.error('Error toggling order status:', error);
-        showToast('❌ Gagal mengubah status pemesanan', 'error');
-    } finally {
-        setLoading(false);
+    
+    setOrderStatus(newStatus);
+    orderOpen = (newStatus === 'open');
+    updateOrderStatusDisplay();
+    
+    if (newStatus === 'open') {
+        showToast('✅ Pemesanan dibuka!', 'success');
+    } else {
+        showToast('⛔ Pemesanan ditutup!', 'success');
     }
 }
 

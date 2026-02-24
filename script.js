@@ -29,37 +29,20 @@ function getSupabaseClient() {
 }
 
 // ============================================
-// ORDER OPEN/CLOSE SYSTEM
+// ORDER OPEN/CLOSE SYSTEM (localStorage)
 // ============================================
 
-async function checkOrderStatus() {
-    try {
-        const client = getSupabaseClient();
-        if (!client) {
-            orderOpen = true;
-            return;
-        }
+const ORDER_STATUS_KEY = 'orderStatus';
 
-        const { data, error } = await client
-            .from('settings')
-            .select('order_open')
-            .limit(1);
+function getOrderStatus() {
+    const status = localStorage.getItem(ORDER_STATUS_KEY);
+    return status || 'open';
+}
 
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-            orderOpen = data[0].order_open;
-        } else {
-            orderOpen = true;
-        }
-
-        updateOrderStatusDisplay();
-
-    } catch (error) {
-        console.error('Error checking order status:', error);
-        orderOpen = true;
-        updateOrderStatusDisplay();
-    }
+function checkOrderStatus() {
+    const status = getOrderStatus();
+    orderOpen = (status === 'open');
+    updateOrderStatusDisplay();
 }
 
 function updateOrderStatusDisplay() {
