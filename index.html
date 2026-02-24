@@ -18,12 +18,9 @@
         <header class="app-header">
             <div class="logo-container">
                 <div class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                        <line x1="9" y1="9" x2="9.01" y2="9"/>
-                        <line x1="15" y1="9" x2="15.01" y2="9"/>
-                    </svg>
+                    <video autoplay loop muted playsinline style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                        <source src="Animation.mp4" type="video/mp4">
+                    </video>
                 </div>
                 <h1 class="app-title">Tahu Walik Wuenaaak</h1>
             </div>
@@ -144,6 +141,13 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="order-item-options">
+                                <label class="cabe-option">
+                                    <input type="checkbox" class="pangsit-cabe" onchange="calculateTotal()">
+                                    <span class="cabe-icon">🌶️</span>
+                                    <span class="cabe-text">Tambah Cabe</span>
+                                </label>
+                            </div>
                         </div>
 
                         <button type="button" class="add-item-btn" onclick="addPangsitItem()">
@@ -179,6 +183,13 @@
                                         <option value="5" data-price="15000">5 biji - Rp15.000</option>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="order-item-options">
+                                <label class="cabe-option">
+                                    <input type="checkbox" class="tahu-cabe" onchange="calculateTotal()">
+                                    <span class="cabe-icon">🌶️</span>
+                                    <span class="cabe-text">Tambah Cabe</span>
+                                </label>
                             </div>
                         </div>
 

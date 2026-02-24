@@ -308,6 +308,9 @@ function renderOrders(orders) {
         let menuDisplay = escapeHtml(order.menu);
         let jumlahDisplay = order.jumlah + ' biji';
         
+        // Get cabe info
+        const cabeDisplay = order.cabe === 'pake cabe' ? '<span style="color: #e53935; font-weight: bold;">🌶️ Pake Cabe</span>' : '<span style="color: #888;">Tidak Cabe</span>';
+        
         if (order.detail) {
             try {
                 const details = JSON.parse(order.detail);
@@ -315,7 +318,8 @@ function renderOrders(orders) {
                     let detailHtml = '<div class="order-detail-list">';
                     details.forEach(item => {
                         const namaMenu = item.menu === 'pangsit-goreng' ? 'Pangsit Goreng' : 'Tahu Walik';
-                        detailHtml += `<div class="order-detail-item">${namaMenu}: ${item.jumlahPerPorsi}×${item.porsi}=${item.jumlah} biji</div>`;
+                        const itemCabe = item.cabe ? ' +Cabe' : '';
+                        detailHtml += `<div class="order-detail-item">${namaMenu}: ${item.jumlahPerPorsi}×${item.porsi}=${item.jumlah} biji${itemCabe}</div>`;
                     });
                     detailHtml += '</div>';
                     menuDisplay = detailHtml;
@@ -333,6 +337,7 @@ function renderOrders(orders) {
                 </td>
                 <td>${menuDisplay}</td>
                 <td>${jumlahDisplay}</td>
+                <td>${cabeDisplay}</td>
                 <td>${formatRupiah(order.harga)}</td>
                 <td>${statusBadge}</td>
                 <td>${formatDateIndonesia(order.created_at)}</td>

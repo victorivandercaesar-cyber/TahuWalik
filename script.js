@@ -169,6 +169,13 @@ function addPangsitItem() {
                 </select>
             </div>
         </div>
+        <div class="order-item-options">
+            <label class="cabe-option">
+                <input type="checkbox" class="pangsit-cabe" onchange="calculateTotal()">
+                <span class="cabe-icon">🌶️</span>
+                <span class="cabe-text">Tambah Cabe</span>
+            </label>
+        </div>
     `;
     
     container.appendChild(newItem);
@@ -229,6 +236,13 @@ function addTahuItem() {
                 </select>
             </div>
         </div>
+        <div class="order-item-options">
+            <label class="cabe-option">
+                <input type="checkbox" class="tahu-cabe" onchange="calculateTotal()">
+                <span class="cabe-icon">🌶️</span>
+                <span class="cabe-text">Tambah Cabe</span>
+            </label>
+        </div>
     `;
     
     container.appendChild(newItem);
@@ -272,6 +286,7 @@ function calculateTotal() {
             const pricePerPorsi = parseInt(option.dataset.price) || 0;
             const jumlahPerPorsi = parseInt(select.value);
             const subtotal = pricePerPorsi * porsi;
+            const cabe = item.querySelector('.pangsit-cabe') ? item.querySelector('.pangsit-cabe').checked : false;
             
             totalPrice += subtotal;
             selectedItems.push({
@@ -281,7 +296,8 @@ function calculateTotal() {
                 jumlahPerPorsi: jumlahPerPorsi,
                 jumlah: jumlahPerPorsi * porsi,
                 harga: pricePerPorsi,
-                subtotal: subtotal
+                subtotal: subtotal,
+                cabe: cabe
             });
         });
     } else if (selectedMenu.value === 'tahu-walik') {
@@ -293,6 +309,7 @@ function calculateTotal() {
             const pricePerPorsi = parseInt(option.dataset.price) || 0;
             const jumlahPerPorsi = parseInt(select.value);
             const subtotal = pricePerPorsi * porsi;
+            const cabe = item.querySelector('.tahu-cabe') ? item.querySelector('.tahu-cabe').checked : false;
             
             totalPrice += subtotal;
             selectedItems.push({
@@ -302,7 +319,8 @@ function calculateTotal() {
                 jumlahPerPorsi: jumlahPerPorsi,
                 jumlah: jumlahPerPorsi * porsi,
                 harga: pricePerPorsi,
-                subtotal: subtotal
+                subtotal: subtotal,
+                cabe: cabe
             });
         });
     }
@@ -457,18 +475,22 @@ async function handleFormSubmit(event) {
             const jumlahPerPorsi = parseInt(select.value);
             const subtotal = pricePerPorsi * porsi;
             
+            const cabe = item.querySelector('.pangsit-cabe') ? item.querySelector('.pangsit-cabe').checked : false;
+            
             orderItems.push({
                 menu: 'pangsit-goreng',
                 item: index + 1,
                 porsi: porsi,
                 jumlahPerPorsi: jumlahPerPorsi,
                 hargaPerPorsi: pricePerPorsi,
-                subtotal: subtotal
+                subtotal: subtotal,
+                cabe: cabe
             });
             
             totalHarga += subtotal;
             totalJumlah += jumlahPerPorsi * porsi;
-            menuDisplay.push(`Pangsit Goreng Item${index + 1}(${jumlahPerPorsi}×${porsi})`);
+            const cabeText = cabe ? '+Cabe' : '';
+            menuDisplay.push(`Pangsit Goreng Item${index + 1}(${jumlahPerPorsi}×${porsi})${cabeText}`);
         });
     } else if (selectedMenu.value === 'tahu-walik') {
         const items = document.querySelectorAll('#tahu-options .order-item');
@@ -479,6 +501,7 @@ async function handleFormSubmit(event) {
             const pricePerPorsi = parseInt(option.dataset.price);
             const jumlahPerPorsi = parseInt(select.value);
             const subtotal = pricePerPorsi * porsi;
+            const cabe = item.querySelector('.tahu-cabe') ? item.querySelector('.tahu-cabe').checked : false;
             
             orderItems.push({
                 menu: 'tahu-walik',
@@ -486,12 +509,14 @@ async function handleFormSubmit(event) {
                 porsi: porsi,
                 jumlahPerPorsi: jumlahPerPorsi,
                 hargaPerPorsi: pricePerPorsi,
-                subtotal: subtotal
+                subtotal: subtotal,
+                cabe: cabe
             });
             
             totalHarga += subtotal;
             totalJumlah += jumlahPerPorsi * porsi;
-            menuDisplay.push(`Tahu Walik Item${index + 1}(${jumlahPerPorsi}×${porsi})`);
+            const cabeText = cabe ? '+Cabe' : '';
+            menuDisplay.push(`Tahu Walik Item${index + 1}(${jumlahPerPorsi}×${porsi})${cabeText}`);
         });
     }
 
@@ -506,6 +531,9 @@ async function handleFormSubmit(event) {
     try {
         const client = getSupabaseClient();
         
+        // Check if any item has cabe
+        const hasCabe = orderItems.some(item => item.cabe === true);
+        
         // Always use localStorage as fallback/primary storage
         // Simpan pesanan ke localStorage sebagai primary storage
         const orderData = {
@@ -516,6 +544,7 @@ async function handleFormSubmit(event) {
             menu: menuDisplay.join(', '),
             jumlah: totalJumlah,
             harga: totalHarga,
+            cabe: hasCabe ? 'pake cabe' : 'tidak pake cabe',
             detail: JSON.stringify(orderItems),
             status: 'pending',
             created_at: new Date().toISOString()
