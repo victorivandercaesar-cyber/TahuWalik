@@ -2105,3 +2105,157 @@ body::before {
     font-weight: 500;
     color: var(--text-primary);
 }
+
+/* ============================================
+   Visibility Options (Public/Private)
+   ============================================ */
+
+.visibility-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.visibility-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.visibility-option:hover {
+    border-color: var(--primary-yellow-light);
+    background: var(--primary-yellow-pale);
+}
+
+.visibility-option input[type="radio"] {
+    display: none;
+}
+
+.visibility-option input[type="radio"]:checked + .visibility-radio {
+    background: var(--primary-yellow-dark);
+    border-color: var(--primary-yellow-dark);
+}
+
+.visibility-option input[type="radio"]:checked + .visibility-radio::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.visibility-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.visibility-icon {
+    font-size: 1.5rem;
+}
+
+.visibility-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.visibility-text strong {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.visibility-text small {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ============================================
+   Mailbox Styles
+   ============================================ */
+
+.mailbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.mailbox-item {
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--primary-yellow-dark);
+    box-shadow: var(--shadow-sm);
+}
+
+.mailbox-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.mailbox-icon {
+    font-size: 1.25rem;
+}
+
+.mailbox-rating {
+    font-size: 1rem;
+    flex: 1;
+}
+
+.mailbox-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.mailbox-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.mailbox-name {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.mailbox-pesan {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: white;
+    border-radius: var(--radius-md);
+}
+
+/* Feedback Admin List */
+.feedback-admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.feedback-admin-list .feedback-item {
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, #FFFFFF 0%, #FAFAFA 100%);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--accent-green);
+}
+
+.feedback-admin-list .feedback-item:nth-child(odd) {
+    border-left-color: var(--primary-yellow);
+}

@@ -1,6 +1,6 @@
 /**
  * ============================================
- * Admin Page JavaScript - FIXED VERSION
+ * Admin Page JavaScript - WITH MAILBOX
  * ============================================
  */
 
@@ -131,7 +131,6 @@ async function fetchOrderStatus() {
 
         if (error) {
             console.log('Error fetching order status:', error);
-            // Jika belum ada data, insert default
             await client
                 .from('system_status')
                 .insert([{ id: 1, order_status: 'open' }]);
@@ -188,7 +187,6 @@ async function toggleOrderStatus() {
             return;
         }
 
-        // Update status di Supabase
         const { error } = await client
             .from('system_status')
             .update({ 
@@ -198,7 +196,6 @@ async function toggleOrderStatus() {
             .eq('id', 1);
 
         if (error) {
-            // Jika data belum ada, insert baru
             await client
                 .from('system_status')
                 .insert([{ 
@@ -319,7 +316,6 @@ function renderOrders(orders) {
         let menuDisplay = escapeHtml(order.menu);
         let jumlahDisplay = order.jumlah + ' biji';
         
-        // Get cabe info
         let cabeDisplay = '';
         if (order.cabe === 'pake cabe') {
             cabeDisplay = '<span class="cabe-yes">🌶️ Pake Cabe</span>';
@@ -446,6 +442,9 @@ function initTabNavigation() {
             }
             if (targetTab === 'feedback') {
                 fetchFeedback();
+            }
+            if (targetTab === 'mailbox') {
+                fetchMailbox();
             }
         });
     });
@@ -673,7 +672,7 @@ function formatDateTimeIndonesia(dateString) {
 }
 
 // ============================================
-// DELETE WEEKLY REPORT - FIXED
+// DELETE WEEKLY REPORT
 // ============================================
 
 async function deleteWeeklyReport(weekKey) {
@@ -684,21 +683,16 @@ async function deleteWeeklyReport(weekKey) {
     try {
         const client = getSupabaseClient();
         
-        // Parse week key (YYYY-MM-DD)
         const parts = weekKey.split('-');
         const year = parseInt(parts[0]);
         const month = parseInt(parts[1]) - 1;
         const day = parseInt(parts[2]);
         
-        // Create date range in local timezone
         const startDate = new Date(year, month, day, 0, 0, 0);
         const endDate = new Date(startDate);
         endDate.setDate(endDate.getDate() + 7);
         
-        console.log('Deleting from:', startDate.toISOString(), 'to:', endDate.toISOString());
-        
         if (client) {
-            // Get ALL orders first
             const { data: allOrders, error: fetchError } = await client
                 .from('orders')
                 .select('id, created_at');
@@ -710,15 +704,11 @@ async function deleteWeeklyReport(weekKey) {
                 return;
             }
             
-            // Filter locally (avoid timezone issues)
             const ordersToDelete = allOrders.filter(order => {
                 const orderDate = new Date(order.created_at);
                 return orderDate >= startDate && orderDate < endDate;
             });
             
-            console.log('Found orders to delete:', ordersToDelete.length);
-            
-            // Delete each order by ID
             let deletedCount = 0;
             for (const order of ordersToDelete) {
                 const { error } = await client
@@ -731,7 +721,6 @@ async function deleteWeeklyReport(weekKey) {
             
             showToast('Berhasil hapus ' + deletedCount + ' pesanan!', 'success');
         } else {
-            // localStorage fallback
             const localOrders = localStorage.getItem('orders');
             if (localOrders) {
                 const orders = JSON.parse(localOrders);
@@ -748,7 +737,6 @@ async function deleteWeeklyReport(weekKey) {
             }
         }
         
-        // Refresh data
         await fetchAnalytics();
         await fetchOrders();
         
@@ -761,7 +749,7 @@ async function deleteWeeklyReport(weekKey) {
 }
 
 // ============================================
-// FEEDBACK FUNCTIONS
+// FEEDBACK FUNCTIONS (PUBLIC ONLY)
 // ============================================
 
 async function fetchFeedback() {
@@ -805,13 +793,16 @@ async function fetchFeedback() {
             }
         }
 
+        // Filter only PUBLIC feedback for admin panel
+        feedbackList = feedbackList.filter(f => f.visibility !== 'private');
+
         if (feedbackList && feedbackList.length > 0) {
             renderFeedback(feedbackList);
         } else {
             container.innerHTML = `
                 <div class="empty-state">
                     <div style="font-size: 2rem; margin-bottom: 8px;">💬</div>
-                    <p>Belum ada kritik dan saran</p>
+                    <p>Belum ada kritik dan saran public</p>
                 </div>
             `;
         }
@@ -867,6 +858,116 @@ function renderFeedback(feedbackList) {
 }
 
 // ============================================
+// MAILBOX FUNCTIONS (PRIVATE FEEDBACK)
+// ============================================
+
+async function fetchMailbox() {
+    const container = document.getElementById('mailbox-list');
+    
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="empty-state">
+            <div style="font-size: 2rem; margin-bottom: 8px;">📬</div>
+            <p>Memuat mailbox...</p>
+        </div>
+    `;
+
+    setLoading(true);
+
+    try {
+        const client = getSupabaseClient();
+        let feedbackList = [];
+        
+        if (client) {
+            try {
+                const { data, error } = await client
+                    .from('feedback')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (!error && data && data.length > 0) {
+                    feedbackList = data;
+                }
+            } catch (supabaseError) {
+                console.log('Supabase error, menggunakan localStorage:', supabaseError);
+            }
+        }
+        
+        if (feedbackList.length === 0) {
+            const localFeedback = localStorage.getItem('feedback');
+            if (localFeedback) {
+                feedbackList = JSON.parse(localFeedback);
+                feedbackList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            }
+        }
+
+        // Filter only PRIVATE feedback for mailbox
+        feedbackList = feedbackList.filter(f => f.visibility === 'private');
+
+        if (feedbackList && feedbackList.length > 0) {
+            renderMailbox(feedbackList);
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div style="font-size: 2rem; margin-bottom: 8px;">📭</div>
+                    <p>Mailbox kosong - belum ada kritik/saran private</p>
+                </div>
+            `;
+        }
+
+    } catch (error) {
+        console.error('Error fetching mailbox:', error);
+        container.innerHTML = `
+            <div class="empty-state">
+                <div style="font-size: 2rem; margin-bottom: 8px;">❌</div>
+                <p>Error memuat data: ${error.message}</p>
+            </div>
+        `;
+    } finally {
+        setLoading(false);
+    }
+}
+
+function renderMailbox(feedbackList) {
+    const container = document.getElementById('mailbox-list');
+    
+    container.innerHTML = feedbackList.map(feedback => {
+        const stars = '⭐'.repeat(feedback.rating || 0);
+        const tanggal = formatDateIndonesia(feedback.created_at);
+        
+        let jenisBadge = '';
+        if (feedback.jenis) {
+            const jenisLabels = {
+                'kritik': 'Kritik',
+                'saran': 'Saran',
+                'testimoni': 'Testimoni',
+                'lainnya': 'Lainnya'
+            };
+            jenisBadge = `<span class="feedback-jenis">${jenisLabels[feedback.jenis] || feedback.jenis}</span>`;
+        }
+        
+        const nama = feedback.nama ? escapeHtml(feedback.nama) : 'Anonim';
+        const pesan = feedback.pesan ? escapeHtml(feedback.pesan) : '-';
+        
+        return `
+            <div class="mailbox-item">
+                <div class="mailbox-header">
+                    <div class="mailbox-icon">🔒</div>
+                    <div class="mailbox-rating">${stars}</div>
+                    <div class="mailbox-date">${tanggal}</div>
+                </div>
+                <div class="mailbox-content">
+                    <div class="mailbox-name">${nama}</div>
+                    ${jenisBadge}
+                    <div class="mailbox-pesan">${pesan}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ============================================
 // INISIALISASI SAAT DOM READY
 // ============================================
 
@@ -897,6 +998,16 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshAnalyticsBtn.addEventListener('click', fetchAnalytics);
     }
 
+    const refreshFeedbackBtn = document.getElementById('refresh-feedback-btn');
+    if (refreshFeedbackBtn) {
+        refreshFeedbackBtn.addEventListener('click', fetchFeedback);
+    }
+
+    const refreshMailboxBtn = document.getElementById('refresh-mailbox-btn');
+    if (refreshMailboxBtn) {
+        refreshMailboxBtn.addEventListener('click', fetchMailbox);
+    }
+
     fetchOrderStatus();
     fetchOrders();
 
@@ -910,3 +1021,4 @@ window.updateStatus = updateStatus;
 window.fetchAnalytics = fetchAnalytics;
 window.deleteWeeklyReport = deleteWeeklyReport;
 window.fetchFeedback = fetchFeedback;
+window.fetchMailbox = fetchMailbox;

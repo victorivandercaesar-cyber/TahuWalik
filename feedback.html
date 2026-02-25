@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kritik & Saran - Tahu Walik Wuenaaak</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧈</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <h1 class="app-title">Tahu Walik Wuenaaak</h1>
+            </div>
+            <p class="app-subtitle">Kritik & Saran Anda Sangat Berarti!</p>
+        </header>
+
+        <main class="main-content">
+            <div class="card feedback-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="card-title-icon">💬</span>
+                        Beri Kami Masukan
+                    </h2>
+                </div>
+
+                <form id="feedback-form" class="feedback-form">
+                    <!-- Rating -->
+                    <div class="form-section">
+                        <label class="form-label">Rating Anda</label>
+                        <div class="rating-container rating-large">
+                            <div class="rating-stars" id="rating-stars">
+                                <span class="star large-star" data-value="1">⭐</span>
+                                <span class="star large-star" data-value="2">⭐</span>
+                                <span class="star large-star" data-value="3">⭐</span>
+                                <span class="star large-star" data-value="4">⭐</span>
+                                <span class="star large-star" data-value="5">⭐</span>
+                            </div>
+                            <input type="hidden" id="rating-value" name="rating" value="0">
+                            <div class="rating-text" id="rating-text">Pilih rating</div>
+                        </div>
+                    </div>
+
+                    <!-- Nama (Opsional) -->
+                    <div class="form-group">
+                        <label for="feedback-name" class="form-label">Nama Anda (Opsional)</label>
+                        <input type="text" id="feedback-name" name="nama" class="form-input" placeholder="Tulis nama Anda...">
+                    </div>
+
+                    <!-- Pesan -->
+                    <div class="form-group">
+                        <label for="feedback-message" class="form-label">Pesan Anda</label>
+                        <textarea id="feedback-message" name="pesan" class="form-input form-textarea feedback-textarea" placeholder="Tulis kritik, saran, atau testimoni Anda di sini..." rows="6" required></textarea>
+                    </div>
+
+                    <!-- Visibility Option (Public/Private) -->
+                    <div class="form-section">
+                        <label class="form-label">Tipe Masukan</label>
+                        <div class="visibility-options">
+                            <label class="visibility-option">
+                                <input type="radio" name="visibility" value="public" checked>
+                                <span class="visibility-radio"></span>
+                                <span class="visibility-icon">🌐</span>
+                                <span class="visibility-text">
+                                    <strong>Public</strong>
+                                    <small>Akan tampil di halaman kritik & saran</small>
+                                </span>
+                            </label>
+                            <label class="visibility-option">
+                                <input type="radio" name="visibility" value="private">
+                                <span class="visibility-radio"></span>
+                                <span class="visibility-icon">🔒</span>
+                                <span class="visibility-text">
+                                    <strong>Private</strong>
+                                    <small>Hanya dilihat oleh admin (Mailbox)</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn" id="submit-btn">
+                        <span class="btn-text">📤 Kirim Masukan</span>
+                        <span class="btn-loading" style="display: none;">⏳ Mengirim...</span>
+                    </button>
+                </form>
+
+                <!-- Success Message -->
+                <div id="success-message" class="success-message" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h3>Terima Kasih!</h3>
+                    <p>Masukan Anda sangat berarti bagi kami untuk meningkatkan kualitas produk dan layanan.</p>
+                    <button class="btn btn-secondary" onclick="resetFeedbackForm()">Kirim Masukan Lagi</button>
+                </div>
+            </div>
+
+            <!-- Lihat Masukan Sebelumnya -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="card-title-icon">📋</span>
+                        Masukan Terbaru
+                    </h2>
+                    <button class="refresh-btn" id="refresh-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+
+                <div id="feedback-list" class="feedback-list">
+                    <div class="empty-state">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">💬</div>
+                        <p>Belum ada masukan</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2026 <a href="index.html">Tahu Walik Wuenaaak</a></p>
+            <div class="footer-links">
+                <a href="index.html">Beranda</a>
+                <a href="track.html">Lacak Pesanan</a>
+            </div>
+        </footer>
+    </div>
+
+    <div id="toast-container"></div>
+    
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Mohon tunggu...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="feedback_new.js"></script>
+</body>
+</html>
