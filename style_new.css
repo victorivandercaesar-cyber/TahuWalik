@@ -956,6 +956,16 @@ body::before {
     font-weight: 600;
 }
 
+.text-cancelled {
+    color: var(--accent-red);
+    font-weight: 600;
+}
+
+.status-badge.status-cancelled {
+    background: var(--accent-red-light);
+    color: #C62828;
+}
+
 /* Action Buttons */
 .action-btn {
     padding: 8px 16px;

@@ -79,7 +79,8 @@ function getStatusLabel(status) {
     const statusLabels = {
         'pending': 'Pending',
         'diterima': 'Diterima',
-        'selesai': 'Selesai'
+        'selesai': 'Selesai',
+        'cancelled': 'Dibatalkan'
     };
     return statusLabels[status] || status;
 }
@@ -326,6 +327,9 @@ function renderOrders(orders) {
         } else if (order.status === 'selesai') {
             statusBadge = `<span class="status-badge status-selesai">Selesai</span>`;
             actionButtons = `<span class="text-success">Pesanan Selesai</span>`;
+        } else if (order.status === 'cancelled') {
+            statusBadge = `<span class="status-badge status-cancelled">Dibatalkan</span>`;
+            actionButtons = `<span class="text-cancelled">Pesanan Dibatalkan</span>`;
         }
 
         let menuDisplay = escapeHtml(order.menu);
