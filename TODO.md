@@ -5,9 +5,9 @@
 ### Steps:
 
 - [x] 1. Update script.js - Perbaiki handleFormSubmit agar data pesanan masuk ke Supabase
-- [x] 2. Update feedback.js - Kritik/saran masuk ke Supabase dengan visibility (public/private)
-- [x] 3. Verifikasi feedback.html - Sudah ada opsi visibility (public/private)
-- [x] 4. Verifikasi admin_new.js - Sudah ada filter untuk public/private feedback
+- [x] 2. Update admin_new.js - Tambahkan status cancelled (Dibatalkan)
+- [x] 3. Update style_new.css - Tambah styling untuk status cancelled
+- [x] 4. Testing - Coba pesan dan cancel
 
 ---
 
@@ -19,37 +19,25 @@
 - Try to insert to Supabase FIRST
 - If Supabase succeeds, also save to localStorage as backup
 - If Supabase fails, use localStorage as fallback
+- Added debug logging for troubleshooting
 
-### Step 2: Update feedback.js
+### Step 2: Update admin_new.js
 **Status:** COMPLETED ✅  
-**Action:** Modified handleFeedbackSubmit to:
-- Get visibility value (public/private) from form
-- Insert to Supabase FIRST with visibility field
-- If Supabase succeeds, save to localStorage as backup
-- If Supabase fails, use localStorage as fallback
+**Action:** Added cancelled status handling:
+- Added 'cancelled': 'Dibatalkan' in getStatusLabel function
+- Added status badge and action buttons for cancelled orders in renderOrders
 
-### Step 3: Verify feedback.html
+### Step 3: Update style_new.css
 **Status:** COMPLETED ✅  
-**Action:** Already has visibility radio buttons:
-- Public (🌐) - default checked
-- Private (🔒)
+**Action:** Added CSS styling for:
+- .text-cancelled class
+- .status-badge.status-cancelled class
 
-### Step 4: Verify admin_new.js
-**Status:** COMPLETED ✅  
-**Action:** Already has functions:
-- isPrivateFeedback(feedback) - returns true if visibility === 'private'
-- isPublicFeedback(feedback) - returns true if visibility === 'public' or no visibility field
-- fetchFeedback() - filters public feedback only
-- fetchMailbox() - filters private feedback only
+### Step 4: Testing
+**Status:** PENDING  
+**Action:** Test by:
+1. Open index.html in browser
+2. Submit a test order
+3. Check if data appears in admin panel
+4. Test cancel functionality from track.html
 
----
-
-## Catatan Penting - Supabase:
-
-Jika data tidak masuk ke Supabase, kemungkinan penyebabnya:
-1. **Tabel belum dibuat** - Buat tabel di Supabase Dashboard:
-   - Tabel `orders` dengan kolom: customer_id, nama, whatsapp, menu, jumlah, harga, cabe, detail, status, created_at
-   - Tabel `feedback` dengan kolom: rating, pesan, nama, whatsapp, jenis, visibility, created_at
-2. **RLS memblokir insert** - Nonaktifkan RLS atau buat policy untuk anonymous users
-
-Buka console browser (F12) untuk melihat debug log.
