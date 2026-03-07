@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/css/style.css">
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧈</text></svg>">
@@ -72,7 +72,7 @@
                 </form>
 
                 <div class="back-link">
-                    <a href="index.html" data-tooltip="Kembali ke halaman pemesanan">
+<a href="/" data-tooltip="Kembali ke halaman pemesanan">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
                             <line x1="19" y1="12" x2="5" y2="12"/>
                             <polyline points="12 19 5 12 12 5"/>
@@ -119,8 +119,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const isAdmin = localStorage.getItem('isAdmin');
-            if (isAdmin === 'true') {
-                window.location.href = 'admin.html';
+if (isAdmin === 'true') {
+                window.location.href = '/admin';
                 return;
             }
 
@@ -145,12 +145,12 @@
             btnLoading.style.display = 'inline';
             loginBtn.disabled = true;
 
-            // Fallback credentials for testing (tidak perlu koneksi Supabase)
+// Fallback credentials for testing (tidak perlu koneksi Supabase)
             if ((username === 'admin' && password === 'Victor#@') || 
                 (username === 'Victor' && password === 'Fuckyou@2006')) {
                 localStorage.setItem('isAdmin', 'true');
                 showToast('Login berhasil!', 'success');
-                setTimeout(() => { window.location.href = 'admin.html'; }, 500);
+                setTimeout(() => { window.location.href = '/admin'; }, 500);
                 return;
             }
 
@@ -178,10 +178,10 @@
                     return;
                 }
 
-                if (data && data.length > 0) {
+if (data && data.length > 0) {
                     localStorage.setItem('isAdmin', 'true');
                     showToast('Login berhasil!', 'success');
-                    setTimeout(() => { window.location.href = 'admin.html'; }, 500);
+                    setTimeout(() => { window.location.href = '/admin'; }, 500);
                 } else {
                     errorMessage.style.display = 'block';
                 }

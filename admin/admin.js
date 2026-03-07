@@ -32,7 +32,7 @@ function getSupabaseClient() {
 function checkAdminAuth() {
     const isAdmin = localStorage.getItem('isAdmin');
     if (isAdmin !== 'true') {
-        window.location.href = 'login.html';
+        window.location.href = '/login';
         return false;
     }
     return true;
@@ -40,7 +40,7 @@ function checkAdminAuth() {
 
 function logoutAdmin() {
     localStorage.removeItem('isAdmin');
-    window.location.href = 'login.html';
+    window.location.href = '/login';
 }
 
 // ============================================
