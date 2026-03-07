@@ -2105,3 +2105,96 @@ body::before {
     font-weight: 500;
     color: var(--text-primary);
 }
+
+/* ============================================
+   Tooltip Styles - Information Button
+   ============================================ */
+
+/* Tooltip container */
+[data-tooltip] {
+    position: relative;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Tooltip info icon */
+.tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(93, 64, 55, 0.15);
+    color: var(--secondary-brown);
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 6px;
+    cursor: help;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.tooltip-icon:hover {
+    background: var(--primary-yellow);
+    transform: scale(1.1);
+}
+
+/* Tooltip bubble */
+.tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--secondary-brown) 0%, #3E2723 100%);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    line-height: 1.4;
+    text-align: center;
+    max-width: 200px;
+    white-space: normal;
+}
+
+/* Tooltip arrow */
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--secondary-brown);
+}
+
+/* Show tooltip on hover */
+[data-tooltip]:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-3px);
+}
+
+/* Tooltip for buttons with icon - position adjustment */
+.submit-btn[data-tooltip] .tooltip,
+button[data-tooltip] .tooltip {
+    bottom: calc(100% + 12px);
+}
+
+/* Links with tooltip */
+a[data-tooltip] {
+    position: relative;
+}
+
+a[data-tooltip] .tooltip {
+    bottom: calc(100% + 8px);
+}

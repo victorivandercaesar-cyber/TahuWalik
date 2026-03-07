@@ -534,10 +534,8 @@ async function handleFormSubmit(event) {
         // Check if any item has cabe
         const hasCabe = orderItems.some(item => item.cabe === true);
         
-        // Always use localStorage as fallback/primary storage
-        // Simpan pesanan ke localStorage sebagai primary storage
+        // Prepare order data
         const orderData = {
-            id: 'ORD-' + Date.now(),
             customer_id: generateCustomerId(),
             nama: nama,
             whatsapp: whatsapp,
@@ -550,29 +548,57 @@ async function handleFormSubmit(event) {
             created_at: new Date().toISOString()
         };
         
-        // Simpan ke localStorage
-        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-        existingOrders.push(orderData);
-        localStorage.setItem('orders', JSON.stringify(existingOrders));
+        let supabaseSuccess = false;
         
-        console.log('Pesanan disimpan:', orderData);
+        // Debug: Check if Supabase client is available
+        console.log('=== SUPABASE DEBUG ===');
+        console.log('Client available:', !!client);
+        console.log('Order data:', orderData);
+        
+        // Try to insert to Supabase FIRST
+        if (client) {
+            try {
+                console.log('Attempting to insert to Supabase...');
+                const { data, error } = await client
+                    .from('orders')
+                    .insert([orderData])
+                    .select();
+                
+                if (error) {
+                    console.error('❌ Supabase insert error:', error);
+                    console.error('Error details:', JSON.stringify(error));
+                    alert('Supabase Error: ' + error.message);
+                } else {
+                    console.log('✅ Pesanan berhasil disimpan ke Supabase:', data);
+                    supabaseSuccess = true;
+                    
+                    // Also save to localStorage as backup
+                    const orderWithId = { ...orderData, id: data[0]?.id || 'ORD-' + Date.now() };
+                    const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+                    existingOrders.push(orderWithId);
+                    localStorage.setItem('orders', JSON.stringify(existingOrders));
+                }
+            } catch (supabaseError) {
+                console.error('❌ Supabase connection error:', supabaseError);
+                alert('Connection Error: ' + supabaseError.message);
+            }
+        } else {
+            console.log('⚠️ Supabase client not available');
+            alert('Supabase client tidak tersedia. Cek console untuk detail.');
+        }
+        console.log('=== END DEBUG ===');
+        
+        // If Supabase not available or failed, use localStorage
+        if (!supabaseSuccess) {
+            const orderWithId = { ...orderData, id: 'ORD-' + Date.now() };
+            const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            existingOrders.push(orderWithId);
+            localStorage.setItem('orders', JSON.stringify(existingOrders));
+            console.log('Pesanan disimpan ke localStorage (Supabase tidak tersedia)');
+        }
         
         showToast('✅ Pesanan berhasil! Kami akan menghubungi Anda via WhatsApp.', 'success');
         resetForm();
-        
-        // Optional: Coba kirim ke Supabase di background
-        if (client) {
-            try {
-                await client
-                    .from('orders')
-                    .insert([orderData]);
-                console.log('Pesanan juga dikirim ke Supabase');
-            } catch (supabaseError) {
-                console.log('Pesanan disimpan di localStorage (Supabase error):', supabaseError);
-            }
-        }
-        
-        return;
 
     } catch (error) {
         console.error('Error submitting order:', error);

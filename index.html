@@ -28,19 +28,21 @@
         </header>
 
         <div class="admin-link-container">
-            <a href="track.html" class="admin-link">
+            <a href="track.html" class="admin-link" data-tooltip="Cek status pesanan Anda">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"/>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 Lacak Pesanan
+                <span class="tooltip">Cek status pesanan Anda</span>
             </a>
-            <a href="login.html" class="admin-link">
+            <a href="login.html" class="admin-link" data-tooltip="Masuk ke halaman admin">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                 </svg>
                 Admin
+                <span class="tooltip">Masuk ke halaman admin</span>
             </a>
         </div>
 
@@ -221,10 +223,11 @@
                     </div>
 
                     <!-- Tombol Submit -->
-                    <button type="submit" class="submit-btn" id="submit-btn" disabled>
+                    <button type="submit" class="submit-btn" id="submit-btn" disabled data-tooltip="Kirim pesanan Anda">
                         <span class="btn-icon">🛒</span>
                         <span class="btn-text">Pesan Sekarang</span>
                         <span class="btn-loading" style="display: none;">Memproses...</span>
+                        <span class="tooltip">Kirim pesanan Anda untuk diproses</span>
                     </button>
                 </form>
             </div>

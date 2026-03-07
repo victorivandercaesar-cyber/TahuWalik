@@ -109,6 +109,21 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Helper function to check if feedback is private
+function isPrivateFeedback(feedback) {
+    // If visibility field is explicitly 'private', return true
+    if (feedback.visibility === 'private') return true;
+    // If no visibility field exists (old data), treat as public
+    return false;
+}
+
+// Helper function to check if feedback is public
+function isPublicFeedback(feedback) {
+    // If visibility field is 'public' or doesn't exist (old data), treat as public
+    if (feedback.visibility === 'public' || !feedback.visibility) return true;
+    return false;
+}
+
 // ============================================
 // ORDER OPEN/CLOSE SYSTEM (Supabase)
 // ============================================
@@ -794,7 +809,7 @@ async function fetchFeedback() {
         }
 
         // Filter only PUBLIC feedback for admin panel
-        feedbackList = feedbackList.filter(f => f.visibility !== 'private');
+        feedbackList = feedbackList.filter(f => isPublicFeedback(f));
 
         if (feedbackList && feedbackList.length > 0) {
             renderFeedback(feedbackList);
@@ -903,7 +918,7 @@ async function fetchMailbox() {
         }
 
         // Filter only PRIVATE feedback for mailbox
-        feedbackList = feedbackList.filter(f => f.visibility === 'private');
+        feedbackList = feedbackList.filter(f => isPrivateFeedback(f));
 
         if (feedbackList && feedbackList.length > 0) {
             renderMailbox(feedbackList);
@@ -912,6 +927,9 @@ async function fetchMailbox() {
                 <div class="empty-state">
                     <div style="font-size: 2rem; margin-bottom: 8px;">📭</div>
                     <p>Mailbox kosong - belum ada kritik/saran private</p>
+                    <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">
+                        Kritik/saran dengan opsi "Private" akan muncul di sini
+                    </p>
                 </div>
             `;
         }
