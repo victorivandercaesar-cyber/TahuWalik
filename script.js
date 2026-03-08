@@ -17,6 +17,12 @@ let orderOpen = true;
 let pangsitItemCount = 1;
 let tahuItemCount = 1;
 
+// Menu settings from admin
+let menuSettings = {
+    enable_tahu_walik: true,
+    enable_pangsit_goreng: true
+};
+
 function getSupabaseClient() {
     if (!supabaseClient && typeof window.supabase !== 'undefined') {
         if (SUPABASE_URL.includes('xxxxx') || SUPABASE_ANON_KEY.includes('...')) {
@@ -61,6 +67,70 @@ async function checkOrderStatus() {
         console.error('Error checking order status:', error);
         orderOpen = true;
         updateOrderStatusDisplay();
+    }
+}
+
+// ============================================
+// MENU SETTINGS (Fetch from Supabase)
+// ============================================
+
+async function fetchMenuSettings() {
+    try {
+        const client = getSupabaseClient();
+        
+        if (!client) {
+            // Use localStorage as fallback
+            const localSettings = localStorage.getItem('menu_settings');
+            if (localSettings) {
+                menuSettings = JSON.parse(localSettings);
+            }
+            applyMenuSettings();
+            return;
+        }
+
+        const { data, error } = await client
+            .from('menu_settings')
+            .select('*')
+            .limit(1);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            menuSettings.enable_tahu_walik = data[0].enable_tahu_walik;
+            menuSettings.enable_pangsit_goreng = data[0].enable_pangsit_goreng;
+        }
+
+        applyMenuSettings();
+
+    } catch (error) {
+        console.error('Error fetching menu settings:', error);
+        applyMenuSettings();
+    }
+}
+
+function applyMenuSettings() {
+    const tahuOption = document.querySelector('input[name="menu"][value="tahu-walik"]');
+    const pangsitOption = document.querySelector('input[name="menu"][value="pangsit-goreng"]');
+    const tahuCard = tahuOption?.closest('.menu-option');
+    const pangsitCard = pangsitOption?.closest('.menu-option');
+    
+    if (tahuCard) {
+        tahuCard.style.display = menuSettings.enable_tahu_walik ? 'block' : 'none';
+    }
+    if (pangsitCard) {
+        pangsitCard.style.display = menuSettings.enable_pangsit_goreng ? 'block' : 'none';
+    }
+    
+    // If currently selected menu is disabled, reset selection
+    const selectedMenu = document.querySelector('input[name="menu"]:checked');
+    if (selectedMenu) {
+        if (selectedMenu.value === 'tahu-walik' && !menuSettings.enable_tahu_walik) {
+            selectedMenu.checked = false;
+            showMenuOptions();
+        } else if (selectedMenu.value === 'pangsit-goreng' && !menuSettings.enable_pangsit_goreng) {
+            selectedMenu.checked = false;
+            showMenuOptions();
+        }
     }
 }
 
@@ -419,6 +489,7 @@ function validateForm() {
 
 document.addEventListener('DOMContentLoaded', () => {
     checkOrderStatus();
+    fetchMenuSettings();
     initOrderForm();
 });
 

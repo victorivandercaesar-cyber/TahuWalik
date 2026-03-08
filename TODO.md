@@ -1,43 +1,46 @@
-# TODO - Supabase Integration
+# TODO - Menu Availability Settings
 
-## Task: Setiap pelanggan pesan, data masuk ke tabel orders di Supabase dan muncul di halaman admin
-
-### Steps:
-
-- [x] 1. Update script.js - Perbaiki handleFormSubmit agar data pesanan masuk ke Supabase
-- [x] 2. Update admin_new.js - Tambahkan status cancelled (Dibatalkan)
-- [x] 3. Update style_new.css - Tambah styling untuk status cancelled
-- [x] 4. Testing - Coba pesan dan cancel
+## Task Summary
+Create a feature where admin can control which menu options (Tahu Walik/Pangsit Goreng) are available on the ordering page. The setting is stored in Supabase and persists until changed by admin.
 
 ---
 
-## Progress Log:
+## Step 1: SQL for Supabase
+- [x] Create table `menu_settings` in Supabase
 
-### Step 1: Update script.js
-**Status:** COMPLETED ✅  
-**Action:** Modified handleFormSubmit to:
-- Try to insert to Supabase FIRST
-- If Supabase succeeds, also save to localStorage as backup
-- If Supabase fails, use localStorage as fallback
-- Added debug logging for troubleshooting
+## Step 2: Admin Panel - HTML
+- [x] Add menu settings section in admin_new.html
 
-### Step 2: Update admin_new.js
-**Status:** COMPLETED ✅  
-**Action:** Added cancelled status handling:
-- Added 'cancelled': 'Dibatalkan' in getStatusLabel function
-- Added status badge and action buttons for cancelled orders in renderOrders
+## Step 3: Admin Panel - JavaScript  
+- [x] Add functions to fetch/save menu settings in admin_new_final.js
 
-### Step 3: Update style_new.css
-**Status:** COMPLETED ✅  
-**Action:** Added CSS styling for:
-- .text-cancelled class
-- .status-badge.status-cancelled class
+## Step 4: Ordering Page - JavaScript
+- [x] Modify script.js to fetch menu settings and control visibility
 
-### Step 4: Testing
-**Status:** PENDING  
-**Action:** Test by:
-1. Open index.html in browser
-2. Submit a test order
-3. Check if data appears in admin panel
-4. Test cancel functionality from track.html
+---
+
+## SQL untuk Supabase (Jalankan di SQL Editor Supabase)
+
+```sql
+-- Tabel untuk menyimpan pengaturan menu
+CREATE TABLE menu_settings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    enable_tahu_walik BOOLEAN DEFAULT true,
+    enable_pangsit_goreng BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Insert default settings (semua menu aktif)
+INSERT INTO menu_settings (enable_tahu_walik, enable_pangsit_goreng) VALUES (true, true);
+```
+
+## Cara Penggunaan
+1. Jalankan SQL di atas di Supabase SQL Editor
+2. Buka halaman admin (admin_new.html)
+3. Di bagian "Pengaturan Menu", admin dapat mengaktifkan/mematikan menu Tahu Walik dan Pangsit Goreng
+4. Pengaturan akan tersimpan di database dan berlaku di halaman pemesanan
+
+## Notes
+- ✅ Semua step telah selesai diimplementasikan
 

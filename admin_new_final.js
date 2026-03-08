@@ -209,6 +209,127 @@ async function toggleOrderStatus() {
 }
 
 // ============================================
+// MENU SETTINGS (Show/Hide Menu Options)
+// ============================================
+
+let menuSettings = {
+    enable_tahu_walik: true,
+    enable_pangsit_goreng: true
+};
+
+async function fetchMenuSettings() {
+    try {
+        const client = getSupabaseClient();
+        
+        if (!client) {
+            // Default settings if no Supabase
+            updateMenuSettingsDisplay();
+            return;
+        }
+
+        const { data, error } = await client
+            .from('menu_settings')
+            .select('*')
+            .limit(1);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            menuSettings.enable_tahu_walik = data[0].enable_tahu_walik;
+            menuSettings.enable_pangsit_goreng = data[0].enable_pangsit_goreng;
+        } else {
+            // Insert default settings
+            await client
+                .from('menu_settings')
+                .insert([{ 
+                    enable_tahu_walik: true, 
+                    enable_pangsit_goreng: true 
+                }]);
+        }
+
+        updateMenuSettingsDisplay();
+
+    } catch (error) {
+        console.error('Error fetching menu settings:', error);
+        updateMenuSettingsDisplay();
+    }
+}
+
+function updateMenuSettingsDisplay() {
+    const tahuToggle = document.getElementById('toggle-tahu-walik');
+    const pangsitToggle = document.getElementById('toggle-pangsit-goreng');
+    
+    if (tahuToggle) {
+        tahuToggle.checked = menuSettings.enable_tahu_walik;
+    }
+    if (pangsitToggle) {
+        pangsitToggle.checked = menuSettings.enable_pangsit_goreng;
+    }
+}
+
+async function saveMenuSettings() {
+    const tahuToggle = document.getElementById('toggle-tahu-walik');
+    const pangsitToggle = document.getElementById('toggle-pangsit-goreng');
+    const statusElement = document.getElementById('menu-settings-status');
+    
+    if (!tahuToggle || !pangsitToggle) return;
+    
+    // Show saving indicator
+    statusElement.querySelector('.status-saving').style.display = 'inline';
+    statusElement.querySelector('.status-saved').style.display = 'none';
+    
+    const newSettings = {
+        enable_tahu_walik: tahuToggle.checked,
+        enable_pangsit_goreng: pangsitToggle.checked,
+        updated_at: new Date().toISOString()
+    };
+    
+    try {
+        const client = getSupabaseClient();
+        
+        if (!client) {
+            // Save to localStorage as fallback
+            localStorage.setItem('menu_settings', JSON.stringify(newSettings));
+            menuSettings = newSettings;
+            statusElement.querySelector('.status-saving').style.display = 'none';
+            statusElement.querySelector('.status-saved').style.display = 'inline';
+            showToast('✅ Pengaturan menu disimpan (local)', 'success');
+            return;
+        }
+
+        // Check if settings exist
+        const { data: existingData } = await client
+            .from('menu_settings')
+            .select('id')
+            .limit(1);
+
+        if (existingData && existingData.length > 0) {
+            // Update existing
+            await client
+                .from('menu_settings')
+                .update(newSettings)
+                .eq('id', existingData[0].id);
+        } else {
+            // Insert new
+            await client
+                .from('menu_settings')
+                .insert([newSettings]);
+        }
+
+        menuSettings = newSettings;
+        statusElement.querySelector('.status-saving').style.display = 'none';
+        statusElement.querySelector('.status-saved').style.display = 'inline';
+        showToast('✅ Pengaturan menu disimpan!', 'success');
+
+    } catch (error) {
+        console.error('Error saving menu settings:', error);
+        statusElement.querySelector('.status-saving').style.display = 'none';
+        statusElement.querySelector('.status-saved').style.display = 'inline';
+        showToast('❌ Gagal menyimpan pengaturan', 'error');
+    }
+}
+
+// ============================================
 // FETCH DAN TAMPILKAN DATA PESANAN
 // ============================================
 
@@ -633,4 +754,44 @@ function formatWeekPeriod(weekKey) {
     weekEnd.setDate(weekEnd.getDate() + 6);
 
     const options = { day: 'numeric', month: 'short', year: 'numeric' };
-    const startStr = weekStart.toLocale
+    const startStr = weekStart.toLocaleDateString('id-ID', options);
+    const endStr = weekEnd.toLocaleDateString('id-ID', options);
+
+    return `${startStr} - ${endStr}`;
+}
+
+// ============================================
+// DELETE WEEKLY REPORT
+// ============================================
+
+async function deleteWeeklyReport(weekKey) {
+    if (!confirm('Apakah Anda yakin ingin menghapus laporan minggu ini?')) {
+        return;
+    }
+    
+    showToast('🗑️ Fitur hapus laporan belum tersedia', 'error');
+}
+
+// ============================================
+// INIT
+// ============================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkAdminAuth();
+    fetchOrderStatus();
+    fetchMenuSettings();
+    fetchOrders();
+    initTabNavigation();
+    
+    // Logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logoutAdmin);
+    }
+    
+    // Refresh button
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', fetchOrders);
+    }
+});

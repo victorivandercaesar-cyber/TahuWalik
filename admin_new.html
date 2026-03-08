@@ -99,6 +99,43 @@
             </div>
 
             <div id="orders-tab" class="tab-content active">
+                <!-- Menu Settings Card -->
+                <div class="card menu-settings-card">
+                    <div class="menu-settings-header">
+                        <h3 class="card-title">
+                            <span class="card-title-icon">🍽️</span>
+                            Pengaturan Menu
+                        </h3>
+                        <span class="menu-settings-desc">Pilih menu yang akan ditampilkan di halaman pemesanan</span>
+                    </div>
+                    <div class="menu-toggle-container">
+                        <div class="menu-toggle-item">
+                            <div class="menu-toggle-info">
+                                <span class="menu-toggle-icon">🧈</span>
+                                <span class="menu-toggle-name">Tahu Walik</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-tahu-walik" checked onchange="saveMenuSettings()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="menu-toggle-item">
+                            <div class="menu-toggle-info">
+                                <span class="menu-toggle-icon">🥟</span>
+                                <span class="menu-toggle-name">Pangsit Goreng</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-pangsit-goreng" checked onchange="saveMenuSettings()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="menu-settings-status" id="menu-settings-status">
+                        <span class="status-saving" style="display: none;">💾 Menyimpan...</span>
+                        <span class="status-saved">✅ Tersimpan</span>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">
@@ -281,7 +318,7 @@
         <div class="loading-text">Mohon tunggu...</div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="admin_new.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="admin_new_final.js"></script> REPLACE
 </body>
 </html>

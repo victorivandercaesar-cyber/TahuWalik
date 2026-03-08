@@ -96,14 +96,57 @@ body::before {
     z-index: -1;
 }
 
-/* Container */
+/* Container - Responsive Width */
 .app-container {
-    max-width: 500px;
+    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
     padding: var(--spacing-md);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+/* Responsive - Mobile First (Default - Phone) */
+@media (max-width: 599px) {
+    .app-container {
+        max-width: 100%;
+        padding: var(--spacing-sm);
+    }
+}
+
+/* Tablet */
+@media (min-width: 600px) {
+    .app-container {
+        max-width: 560px;
+        padding: var(--spacing-xl);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .app-container {
+        max-width: 800px;
+        padding: var(--spacing-2xl);
+    }
+    
+    body {
+        background: linear-gradient(135deg, #FFFEF5 0%, #FFF8E7 50%, #FFF5E0 100%);
+    }
+    
+    body::before {
+        background-image: 
+            radial-gradient(circle at 10% 90%, rgba(255, 193, 7, 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 90% 10%, rgba(93, 64, 55, 0.05) 0%, transparent 40%),
+            radial-gradient(circle at 50% 50%, rgba(255, 193, 7, 0.03) 0%, transparent 30%);
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+    .app-container {
+        max-width: 1000px;
+    }
 }
 
 /* ============================================
@@ -2197,4 +2240,138 @@ a[data-tooltip] {
 
 a[data-tooltip] .tooltip {
     bottom: calc(100% + 8px);
+}
+
+/* ============================================
+   Menu Settings Card Styles
+   ============================================ */
+
+.menu-settings-card {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFFEF5 100%);
+    border: 2px solid var(--primary-yellow-light);
+}
+
+.menu-settings-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.menu-settings-header .card-title {
+    margin-bottom: var(--spacing-xs);
+    justify-content: center;
+}
+
+.menu-settings-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.menu-toggle-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.menu-toggle-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: white;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    transition: all 0.3s ease;
+}
+
+.menu-toggle-item:hover {
+    border-color: var(--primary-yellow-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.menu-toggle-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.menu-toggle-icon {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-yellow-pale);
+    border-radius: var(--radius-md);
+}
+
+.menu-toggle-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 32px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 32px;
+}
+
+.toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--primary-yellow-dark) 100%);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(28px);
+}
+
+.toggle-switch input:focus + .toggle-slider {
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+}
+
+.menu-settings-status {
+    text-align: center;
+    margin-top: var(--spacing-md);
+    font-size: 0.85rem;
+}
+
+.menu-settings-status .status-saving {
+    color: var(--text-muted);
+}
+
+.menu-settings-status .status-saved {
+    color: var(--accent-green);
 }
