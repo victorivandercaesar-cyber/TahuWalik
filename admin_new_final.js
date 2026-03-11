@@ -124,19 +124,18 @@ async function fetchOrderStatus() {
         }
 
         const { data, error } = await client
-            .from('settings')
-            .select('order_open')
-            .limit(1);
+            .from('system_status')
+            .select('order_status')
+            .eq('id', 1)
+            .single();
 
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-            orderOpen = data[0].order_open;
-        } else {
+        if (error || !data) {
             orderOpen = true;
             await client
-                .from('settings')
-                .insert([{ order_open: true }]);
+                .from('system_status')
+                .insert([{ id: 1, order_status: 'open' }]);
+        } else {
+            orderOpen = data.order_status === 'open';
         }
 
         updateOrderStatusDisplay();
@@ -163,6 +162,7 @@ function updateOrderStatusDisplay() {
 
 async function toggleOrderStatus() {
     const newStatus = !orderOpen;
+    const newStatusString = newStatus ? 'open' : 'closed';
     
     if (!confirm(newStatus ? 'Apakah Anda yakin ingin MEMBUKA pemesanan?' : 'Apakah Anda yakin ingin MENUTUP pemesanan?')) {
         return;
@@ -181,19 +181,20 @@ async function toggleOrderStatus() {
         }
 
         const { data: existingData } = await client
-            .from('settings')
+            .from('system_status')
             .select('id')
-            .limit(1);
+            .eq('id', 1)
+            .single();
 
-        if (existingData && existingData.length > 0) {
+        if (existingData) {
             await client
-                .from('settings')
-                .update({ order_open: newStatus })
-                .eq('id', existingData[0].id);
+                .from('system_status')
+                .update({ order_status: newStatusString })
+                .eq('id', 1);
         } else {
             await client
-                .from('settings')
-                .insert([{ order_open: newStatus }]);
+                .from('system_status')
+                .insert([{ id: 1, order_status: newStatusString }]);
         }
 
         orderOpen = newStatus;

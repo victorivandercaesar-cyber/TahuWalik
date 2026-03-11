@@ -48,17 +48,27 @@ async function checkOrderStatus() {
             return;
         }
 
+        // Read from 'system_status' table
         const { data, error } = await client
             .from('system_status')
             .select('order_status')
             .eq('id', 1)
             .single();
 
+        console.log('System status data:', data);
+        console.log('System status error:', error);
+
         if (error || !data) {
-            // Jika belum ada data, default open
+            // If no settings exist, default to open
             orderOpen = true;
+            // Create default settings
+            await client
+                .from('system_status')
+                .insert([{ id: 1, order_status: 'open' }]);
+            console.log('Created default settings with order_status = open');
         } else {
-            orderOpen = (data.order_status === 'open');
+            orderOpen = data.order_status === 'open';
+            console.log('Order status from DB:', data.order_status, '-> orderOpen:', orderOpen);
         }
 
         updateOrderStatusDisplay();
