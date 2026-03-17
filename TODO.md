@@ -1,46 +1,30 @@
-# TODO - Menu Availability Settings
+# Implement Mailbox - Private Feedback in Admin
 
-## Task Summary
-Create a feature where admin can control which menu options (Tahu Walik/Pangsit Goreng) are available on the ordering page. The setting is stored in Supabase and persists until changed by admin.
+**Status:** In Progress
 
----
+## Breakdown of Approved Plan:
 
-## Step 1: SQL for Supabase
-- [x] Create table `menu_settings` in Supabase
+### 1. Update admin_new_final.js
+- [x] Add `fetchMailbox()` function
+  - Query Supabase: feedback table where visibility='private'
+  - Fallback to localStorage
+  - Order by created_at descending
+- [x] Add `renderMailbox(feedbackData)` function
+  - Display in #mailbox-list
+  - Show: rating, name, message, date, whatsapp
+  - Add read/unread status if needed
+- [x] Add event listener for refresh-mailbox-btn
+- [x] Update initTabNavigation() to call fetchMailbox() on mailbox tab
 
-## Step 2: Admin Panel - HTML
-- [x] Add menu settings section in admin_new.html
+### 2. Verify feedback_new.js
+- [ ] Confirm captures visibility radio correctly
 
-## Step 3: Admin Panel - JavaScript  
-- [x] Add functions to fetch/save menu settings in admin_new_final.js
+### 3. Testing
+- [ ] Test mailbox loads private feedback
+- [ ] Verify public/private separation in feedback-tab
+- [ ] Test refresh button
 
-## Step 4: Ordering Page - JavaScript
-- [x] Modify script.js to fetch menu settings and control visibility
+### 4. Completion
+- [ ] attempt_completion with result
 
----
-
-## SQL untuk Supabase (Jalankan di SQL Editor Supabase)
-
-```sql
--- Tabel untuk menyimpan pengaturan menu
-CREATE TABLE menu_settings (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    enable_tahu_walik BOOLEAN DEFAULT true,
-    enable_pangsit_goreng BOOLEAN DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Insert default settings (semua menu aktif)
-INSERT INTO menu_settings (enable_tahu_walik, enable_pangsit_goreng) VALUES (true, true);
-```
-
-## Cara Penggunaan
-1. Jalankan SQL di atas di Supabase SQL Editor
-2. Buka halaman admin (admin_new.html)
-3. Di bagian "Pengaturan Menu", admin dapat mengaktifkan/mematikan menu Tahu Walik dan Pangsit Goreng
-4. Pengaturan akan tersimpan di database dan berlaku di halaman pemesanan
-
-## Notes
-- ✅ Semua step telah selesai diimplementasikan
-
+**Next Step:** Implement functions in admin_new_final.js

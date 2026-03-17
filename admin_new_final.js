@@ -545,11 +545,113 @@ function initTabNavigation() {
             btn.classList.add('active');
             document.getElementById(`${targetTab}-tab`).classList.add('active');
 
-            if (targetTab === 'analytics') {
+            if (targetTab === 'orders') {
+                fetchOrders();
+            } else if (targetTab === 'feedback') {
+                fetchFeedbackAdmin ? fetchFeedbackAdmin() : fetchOrders(); // Fallback if function missing
+            } else if (targetTab === 'mailbox') {
+                fetchMailbox();
+            } else if (targetTab === 'analytics') {
                 fetchAnalytics();
             }
         });
     });
+}
+
+// ============================================
+// MAILBOX FUNCTIONS (PRIVATE FEEDBACK)
+// ============================================
+
+async function fetchMailbox() {
+    const mailboxList = document.getElementById('mailbox-list');
+    
+    setLoading(true);
+    
+    try {
+        const client = getSupabaseClient();
+        let privateFeedback = [];
+        
+        if (client) {
+            try {
+                const { data, error } = await client
+                    .from('feedback')
+                    .select('*')
+                    .eq('visibility', 'private')
+                    .order('created_at', { ascending: false });
+                
+                if (!error && data && data.length > 0) {
+                    privateFeedback = data;
+                }
+            } catch (supabaseError) {
+                console.log('Supabase error for private feedback, using localStorage:', supabaseError);
+            }
+        }
+        
+        // Fallback to localStorage
+        if (privateFeedback.length === 0) {
+            const localFeedback = localStorage.getItem('feedback');
+            if (localFeedback) {
+                const allFeedback = JSON.parse(localFeedback);
+                privateFeedback = allFeedback.filter(f => f.visibility === 'private');
+                privateFeedback.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            }
+        }
+        
+        renderMailbox(privateFeedback);
+        
+    } catch (error) {
+        console.error('Error fetching mailbox:', error);
+        mailboxList.innerHTML = `
+            <div class="empty-state">
+                <div style="font-size: 2rem; margin-bottom: 8px;">❌</div>
+                <p>Error memuat private feedback</p>
+            </div>
+        `;
+    } finally {
+        setLoading(false);
+    }
+}
+
+function renderMailbox(feedbackData) {
+    const mailboxList = document.getElementById('mailbox-list');
+    
+    if (!feedbackData || feedbackData.length === 0) {
+        mailboxList.innerHTML = `
+            <div class="empty-state">
+                <div style="font-size: 2rem; margin-bottom: 8px;">📬</div>
+                <p>Tidak ada feedback private</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const ratingStars = {
+        1: '⭐',
+        2: '⭐⭐', 
+        3: '⭐⭐⭐',
+        4: '⭐⭐⭐⭐',
+        5: '⭐⭐⭐⭐⭐'
+    };
+    
+    mailboxList.innerHTML = feedbackData.map(feedback => {
+        const date = formatDateIndonesia(feedback.created_at);
+        const stars = ratingStars[feedback.rating] || '';
+        const whatsappLink = feedback.whatsapp ? `<a href="https://wa.me/${feedback.whatsapp}" target="_blank" class="whatsapp-link">${feedback.whatsapp}</a>` : '';
+        
+        return `
+            <div class="feedback-item mailbox-item">
+                <div class="feedback-header">
+                    <div class="feedback-rating">${stars}</div>
+                    <div class="feedback-date">${date}</div>
+                </div>
+                <div class="feedback-content">
+                    <div class="feedback-name">${escapeHtml(feedback.nama || 'Anonim')}</div>
+                    ${whatsappLink ? `<div class="feedback-whatsapp">${whatsappLink}</div>` : ''}
+                    <div class="feedback-pesan">${escapeHtml(feedback.pesan)}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 // ============================================
@@ -794,5 +896,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const refreshBtn = document.getElementById('refresh-btn');
     if (refreshBtn) {
         refreshBtn.addEventListener('click', fetchOrders);
+    }
+    
+    // Mailbox refresh button
+    const refreshMailboxBtn = document.getElementById('refresh-mailbox-btn');
+    if (refreshMailboxBtn) {
+        refreshMailboxBtn.addEventListener('click', fetchMailbox);
+    }
+    
+    // Feedback refresh button  
+    const refreshFeedbackBtn = document.getElementById('refresh-feedback-btn');
+    if (refreshFeedbackBtn) {
+        refreshFeedbackBtn.addEventListener('click', fetchFeedbackAdmin);
     }
 });
