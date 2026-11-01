@@ -15,36 +15,39 @@
 <body>
     <div class="app-container">
         <header class="app-header admin-header">
-            <div class="logo-container">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
-                    </svg>
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="app-title">Admin Panel</h1>
+                        <p class="app-subtitle">Kelola Pesanan • Tahu Walik Wuenaaak</p>
+                    </div>
                 </div>
-                <h1 class="app-title">Admin Panel</h1>
+                <div class="admin-link-container">
+                    <a href="index.html" class="admin-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                        Pemesanan
+                    </a>
+                    <button class="logout-btn" id="logout-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Logout
+                    </button>
+                </div>
             </div>
-            <p class="app-subtitle">Kelola Pesanan • Tahu Walik Wuenaaak</p>
         </header>
-
-        <div class="admin-link-container">
-            <a href="index.html" class="admin-link">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-                Pemesanan
-            </a>
-            <button class="logout-btn" id="logout-btn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-                Logout
-            </button>
-        </div>
 
         <div class="tab-navigation">
             <button class="tab-btn active" data-tab="orders">
@@ -55,6 +58,13 @@
                     <line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
                 Daftar Pesanan
+            </button>
+            <button class="tab-btn" data-tab="kasir">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                Kasir (Pesan Baru)
             </button>
             <button class="tab-btn" data-tab="feedback">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -95,6 +105,36 @@
                     <button class="toggle-order-btn" id="toggle-order-btn" onclick="toggleOrderStatus()">
                         🔄 Loading...
                     </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Rekap Penjualan (Pesanan Selesai) -->
+            <div class="card dashboard-recap-card">
+                <div class="card-header" style="margin-bottom: 16px;">
+                    <h3 class="card-title" style="margin: 0; font-size: 1.15rem;">
+                        <span class="card-title-icon">📊</span>
+                        Rekapitulasi Penjualan (Pesanan Selesai)
+                    </h3>
+                    <button class="refresh-btn" id="refresh-recap-btn" onclick="fetchDashboardRecap()" style="padding: 6px 14px; font-size: 0.75rem;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+                <div class="dashboard-recap-grid">
+                    <div class="recap-item">
+                        <div class="recap-icon">✅</div>
+                        <div class="recap-label">Total Pesanan Selesai</div>
+                        <div class="recap-value" id="recap-total-orders">0</div>
+                    </div>
+                    <div class="recap-item">
+                        <div class="recap-icon">💰</div>
+                        <div class="recap-label">Total Pendapatan (Selesai)</div>
+                        <div class="recap-value" id="recap-total-revenue">Rp 0</div>
+                    </div>
                 </div>
             </div>
 
@@ -182,6 +222,200 @@
                         <div style="font-size: 3rem; margin-bottom: 8px;">📭</div>
                         <p>Tidak ada pesanan</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Tab Kasir (Buat Pesanan Baru Dari Admin) -->
+            <div id="kasir-tab" class="tab-content">
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="card-title-icon">🛒</span>
+                            Buat Pesanan Baru (Kasir / WhatsApp)
+                        </h2>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+                        💡 Form ini untuk input pesanan masuk manual dari WhatsApp atau pembeli langsung. Data pesanan akan langsung tersimpan ke database Supabase persis seperti form pelanggan.
+                    </p>
+
+                    <form id="kasir-order-form">
+                        <div class="kasir-split-grid">
+                            <!-- Kolom Kiri: Input Pelanggan & Pemilihan Menu -->
+                            <div class="kasir-left-col">
+                                <!-- Data Pelanggan -->
+                                <div class="form-section">
+                                    <h3 class="section-title">Data Pelanggan</h3>
+                                    <div class="form-row-2col">
+                                        <div class="input-group">
+                                            <label for="kasir-customer-name">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                                    <circle cx="12" cy="7" r="4"/>
+                                                </svg>
+                                                Nama Pelanggan
+                                            </label>
+                                            <input type="text" id="kasir-customer-name" placeholder="Nama pelanggan" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="kasir-whatsapp">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
+                                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                                </svg>
+                                                Nomor WhatsApp
+                                            </label>
+                                            <input type="tel" id="kasir-whatsapp" placeholder="Contoh: 081234567890" pattern="[0-9]{10,13}" required>
+                                            <small class="input-hint">📱 Nomor WhatsApp pelanggan untuk konfirmasi</small>
+                                            <small id="kasir-autofill-status" style="display:none;"></small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pilih Menu -->
+                                <div class="form-section">
+                                    <h3 class="section-title">Pilih Menu</h3>
+                                    <div class="menu-selection">
+                                        <label class="menu-option">
+                                            <input type="radio" name="kasir-menu" value="pangsit-goreng" required onchange="showKasirMenuOptions()">
+                                            <span class="menu-card">
+                                                <span class="menu-icon">🥟</span>
+                                                <span class="menu-name">Pangsit Goreng</span>
+                                                <span class="menu-check">✓</span>
+                                            </span>
+                                        </label>
+                                        <label class="menu-option">
+                                            <input type="radio" name="kasir-menu" value="tahu-walik" onchange="showKasirMenuOptions()">
+                                            <span class="menu-card">
+                                                <span class="menu-icon">🧈</span>
+                                                <span class="menu-name">Tahu Walik</span>
+                                                <span class="menu-check">✓</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Opsi Pangsit -->
+                                <div class="form-section menu-options-section" id="kasir-pangsit-options" style="display: none;">
+                                    <h3 class="section-title">
+                                        <span>🥟</span> Jumlah Pangsit Goreng
+                                    </h3>
+                                    <div class="order-item" id="kasir-pangsit-item-1">
+                                        <div class="order-item-header">
+                                            <span class="order-item-number">Item 1</span>
+                                        </div>
+                                        <div class="order-item-fields">
+                                            <div class="input-group">
+                                                <label>Jumlah Porsi</label>
+                                                <select class="kasir-pangsit-porsi" onchange="calculateKasirTotal()">
+                                                    <option value="1">1 Porsi</option>
+                                                    <option value="2">2 Porsi</option>
+                                                    <option value="3">3 Porsi</option>
+                                                    <option value="4">4 Porsi</option>
+                                                    <option value="5">5 Porsi</option>
+                                                </select>
+                                            </div>
+                                            <div class="input-group">
+                                                <label>Isi per Porsi</label>
+                                                <select class="kasir-pangsit-jumlah" onchange="calculateKasirTotal()">
+                                                    <option value="5" data-price="10000">5 biji - Rp10.000</option>
+                                                    <option value="8" data-price="15000">8 biji - Rp15.000</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="order-item-options">
+                                            <label class="cabe-option">
+                                                <input type="checkbox" class="kasir-pangsit-cabe" onchange="calculateKasirTotal()">
+                                                <span class="cabe-icon">🌶️</span>
+                                                <span class="cabe-text">Tambah Cabe</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="add-item-btn" onclick="addKasirPangsitItem()">
+                                        <span>+</span> Tambah Item
+                                    </button>
+                                </div>
+
+                                <!-- Opsi Tahu -->
+                                <div class="form-section menu-options-section" id="kasir-tahu-options" style="display: none;">
+                                    <h3 class="section-title">
+                                        <span>🧈</span> Jumlah Tahu Walik
+                                    </h3>
+                                    <div class="order-item" id="kasir-tahu-item-1">
+                                        <div class="order-item-header">
+                                            <span class="order-item-number">Item 1</span>
+                                        </div>
+                                        <div class="order-item-fields">
+                                            <div class="input-group">
+                                                <label>Jumlah Porsi</label>
+                                                <select class="kasir-tahu-porsi" onchange="calculateKasirTotal()">
+                                                    <option value="1">1 Porsi</option>
+                                                    <option value="2">2 Porsi</option>
+                                                    <option value="3">3 Porsi</option>
+                                                    <option value="4">4 Porsi</option>
+                                                    <option value="5">5 Porsi</option>
+                                                </select>
+                                            </div>
+                                            <div class="input-group">
+                                                <label>Isi per Porsi</label>
+                                                <select class="kasir-tahu-jumlah" onchange="calculateKasirTotal()">
+                                                    <option value="3" data-price="10000">3 biji - Rp10.000</option>
+                                                    <option value="5" data-price="15000">5 biji - Rp15.000</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="order-item-options">
+                                            <label class="cabe-option">
+                                                <input type="checkbox" class="kasir-tahu-cabe" onchange="calculateKasirTotal()">
+                                                <span class="cabe-icon">🌶️</span>
+                                                <span class="cabe-text">Tambah Cabe</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="add-item-btn" onclick="addKasirTahuItem()">
+                                        <span>+</span> Tambah Item
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Kolom Kanan: Status Awal, Ringkasan, Total & Submit -->
+                            <div class="kasir-right-col">
+                                <!-- Status Awal Pesanan -->
+                                <div class="form-section">
+                                    <h3 class="section-title">Status Awal Pesanan</h3>
+                                    <div class="input-group">
+                                        <label for="kasir-initial-status">Pilih Status Awal</label>
+                                        <select id="kasir-initial-status">
+                                            <option value="pending">⏳ Pending (Menunggu Diproses)</option>
+                                            <option value="diterima">🍳 Diterima (Sedang Dimasak/Dipersiapkan)</option>
+                                            <option value="selesai">✅ Selesai (Langsung Selesai &amp; Lunas)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Ringkasan Pesanan Kasir -->
+                                <div class="form-section" id="kasir-summary-section" style="display: none;">
+                                    <h3 class="section-title">
+                                        <span>📋</span> Ringkasan Pesanan
+                                    </h3>
+                                    <div id="kasir-order-summary"></div>
+                                </div>
+
+                                <!-- Total Harga -->
+                                <div class="form-section total-section">
+                                    <div class="total-display">
+                                        <span class="total-label">Total Harga:</span>
+                                        <span class="total-amount" id="kasir-total-price">Rp0</span>
+                                    </div>
+                                </div>
+
+                                <!-- Tombol Submit Kasir -->
+                                <button type="submit" class="submit-btn" id="kasir-submit-btn" disabled>
+                                    <span class="btn-icon">🛒</span>
+                                    <span class="btn-text">Simpan Pesanan ke Supabase</span>
+                                    <span class="btn-loading" style="display: none;">Menyimpan...</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 

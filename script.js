@@ -501,6 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkOrderStatus();
     fetchMenuSettings();
     initOrderForm();
+    initCustomerMemory();
 });
 
 function initOrderForm() {
@@ -511,13 +512,209 @@ function initOrderForm() {
     const whatsappInput = document.getElementById('whatsapp');
 
     if (nameInput) {
-        nameInput.addEventListener('input', validateForm);
+        nameInput.addEventListener('input', () => {
+            nameInput.dataset.autofilled = 'false';
+            validateForm();
+        });
     }
     if (whatsappInput) {
-        whatsappInput.addEventListener('input', validateForm);
+        whatsappInput.addEventListener('input', () => {
+            whatsappInput.dataset.autofilled = 'false';
+            validateForm();
+        });
     }
 
     orderForm.addEventListener('submit', handleFormSubmit);
+}
+
+// ============================================
+// FITUR "MEMORY" PELANGGAN (Auto-Fill)
+// ============================================
+
+function initCustomerMemory() {
+    const nameInput = document.getElementById('customer-name');
+    const whatsappInput = document.getElementById('whatsapp');
+
+    if (whatsappInput) {
+        whatsappInput.addEventListener('blur', async () => {
+            const phone = whatsappInput.value.trim();
+            if (phone.length >= 10) {
+                await lookupCustomerByPhone(phone);
+            }
+        });
+    }
+
+    if (nameInput) {
+        nameInput.addEventListener('blur', async () => {
+            const name = nameInput.value.trim();
+            if (name.length >= 3) {
+                await lookupCustomerByName(name);
+            }
+        });
+    }
+}
+
+function showAutofillNotification(message) {
+    const statusEl = document.getElementById('autofill-status');
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.style.display = 'block';
+    setTimeout(() => {
+        if (statusEl) statusEl.style.display = 'none';
+    }, 4500);
+}
+
+async function lookupCustomerByPhone(phone) {
+    const nameInput = document.getElementById('customer-name');
+    if (!nameInput) return;
+    if (nameInput.value.trim() !== '' && nameInput.dataset.autofilled !== 'true') {
+        return; // Pengguna sudah mengisi nama manual, jangan timpa
+    }
+
+    try {
+        const client = getSupabaseClient();
+        let foundName = null;
+
+        if (client) {
+            // 1. Cek tabel customers
+            try {
+                const { data, error } = await client
+                    .from('customers')
+                    .select('nama')
+                    .eq('whatsapp', phone)
+                    .limit(1);
+                if (!error && data && data.length > 0 && data[0].nama) {
+                    foundName = data[0].nama;
+                }
+            } catch (err) {
+                console.log('Query customers by phone error, trying orders fallback:', err);
+            }
+
+            // 2. Fallback: cek riwayat pesanan (orders)
+            if (!foundName) {
+                try {
+                    const { data: orderData, error: orderErr } = await client
+                        .from('orders')
+                        .select('nama')
+                        .eq('whatsapp', phone)
+                        .order('created_at', { ascending: false })
+                        .limit(1);
+                    if (!orderErr && orderData && orderData.length > 0 && orderData[0].nama) {
+                        foundName = orderData[0].nama;
+                    }
+                } catch (e) {}
+            }
+        }
+
+        // 3. Fallback: cek riwayat localStorage
+        if (!foundName) {
+            const localCustomers = JSON.parse(localStorage.getItem('customers') || '{}');
+            if (localCustomers[phone]) {
+                foundName = localCustomers[phone];
+            } else {
+                const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                const match = orders.find(o => o.whatsapp === phone);
+                if (match && match.nama) foundName = match.nama;
+            }
+        }
+
+        if (foundName) {
+            nameInput.value = foundName;
+            nameInput.dataset.autofilled = 'true';
+            showAutofillNotification(`✨ Halo kembali, ${foundName}! Nama terisi otomatis.`);
+            validateForm();
+        }
+    } catch (error) {
+        console.error('Error looking up customer by phone:', error);
+    }
+}
+
+async function lookupCustomerByName(name) {
+    const whatsappInput = document.getElementById('whatsapp');
+    if (!whatsappInput) return;
+    if (whatsappInput.value.trim() !== '' && whatsappInput.dataset.autofilled !== 'true') {
+        return; // Pengguna sudah mengisi nomor manual, jangan timpa
+    }
+
+    try {
+        const client = getSupabaseClient();
+        let foundPhone = null;
+
+        if (client) {
+            // 1. Cek tabel customers
+            try {
+                const { data, error } = await client
+                    .from('customers')
+                    .select('whatsapp')
+                    .ilike('nama', name)
+                    .limit(1);
+                if (!error && data && data.length > 0 && data[0].whatsapp) {
+                    foundPhone = data[0].whatsapp;
+                }
+            } catch (err) {
+                console.log('Query customers by name error, trying orders fallback:', err);
+            }
+
+            // 2. Fallback: cek riwayat pesanan (orders)
+            if (!foundPhone) {
+                try {
+                    const { data: orderData, error: orderErr } = await client
+                        .from('orders')
+                        .select('whatsapp')
+                        .ilike('nama', name)
+                        .order('created_at', { ascending: false })
+                        .limit(1);
+                    if (!orderErr && orderData && orderData.length > 0 && orderData[0].whatsapp) {
+                        foundPhone = orderData[0].whatsapp;
+                    }
+                } catch (e) {}
+            }
+        }
+
+        // 3. Fallback: cek riwayat localStorage
+        if (!foundPhone) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const match = orders.find(o => o.nama && o.nama.toLowerCase() === name.toLowerCase());
+            if (match && match.whatsapp) foundPhone = match.whatsapp;
+        }
+
+        if (foundPhone) {
+            whatsappInput.value = foundPhone;
+            whatsappInput.dataset.autofilled = 'true';
+            showAutofillNotification(`✨ Nomor WhatsApp terisi otomatis: ${foundPhone}`);
+            validateForm();
+        }
+    } catch (error) {
+        console.error('Error looking up customer by name:', error);
+    }
+}
+
+async function saveCustomerData(nama, whatsapp) {
+    if (!nama || !whatsapp) return;
+    try {
+        const client = getSupabaseClient();
+        if (client) {
+            try {
+                await client
+                    .from('customers')
+                    .upsert([{ 
+                        whatsapp: whatsapp, 
+                        nama: nama, 
+                        updated_at: new Date().toISOString() 
+                    }], { onConflict: 'whatsapp' });
+                console.log('✅ Data pelanggan tersimpan/diperbarui di tabel customers');
+            } catch (err) {
+                console.warn('Upsert to customers table warning (pastikan tabel sudah dibuat via SQL):', err);
+            }
+        }
+
+        // Simpan juga di localStorage
+        const localCustomers = JSON.parse(localStorage.getItem('customers') || '{}');
+        localCustomers[whatsapp] = nama;
+        localStorage.setItem('customers', JSON.stringify(localCustomers));
+    } catch (e) {
+        console.error('Error saving customer data:', e);
+    }
 }
 
 // ============================================
@@ -658,6 +855,9 @@ async function handleFormSubmit(event) {
                     const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
                     existingOrders.push(orderWithId);
                     localStorage.setItem('orders', JSON.stringify(existingOrders));
+                    
+                    // Simpan data customer ke tabel customers (Memory Pelanggan)
+                    await saveCustomerData(nama, whatsapp);
                 }
             } catch (supabaseError) {
                 console.error('❌ Supabase connection error:', supabaseError);
@@ -676,6 +876,9 @@ async function handleFormSubmit(event) {
             existingOrders.push(orderWithId);
             localStorage.setItem('orders', JSON.stringify(existingOrders));
             console.log('Pesanan disimpan ke localStorage (Supabase tidak tersedia)');
+            
+            // Simpan data customer ke localStorage (Memory Pelanggan)
+            await saveCustomerData(nama, whatsapp);
         }
         
         showToast('✅ Pesanan berhasil! Kami akan menghubungi Anda via WhatsApp.', 'success');
@@ -706,6 +909,11 @@ function resetForm() {
     
     pangsitItemCount = 1;
     tahuItemCount = 1;
+
+    const nameInput = document.getElementById('customer-name');
+    const whatsappInput = document.getElementById('whatsapp');
+    if (nameInput) nameInput.dataset.autofilled = 'false';
+    if (whatsappInput) whatsappInput.dataset.autofilled = 'false';
 }
 
 function showToast(message, type = 'success') {
